@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset='utf-8'>
+  <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+  <title>Page Title</title>
+  <meta name='viewport' content='width=device-width, initial-scale=1'>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  
+  <style>
+    .fa {
+      padding: 20px;
+      font-size: 30px;
+      width: 50px;
+      text-align: center;
+      text-decoration: none;
+      margin: 5px 2px;
+    }
+
+    .fa:hover {
+      opacity: 0.7;
+    }
+
+    .fa-facebook {
+      background: #3B5998;
+      color: white;
+    }
+
+    
+
+    
+
+    
+
+    .fa-youtube {
+      background: #bb0000;
+      color: white;
+    }
+
+    .fa-instagram {
+       background: #fff; 
+      color: red;
+    }
+   
+    
+
+   
+
+  
+
+    
+    .fa {
+      padding: 10px;
+      font-size: 20px;
+      width: 30px;
+      text-align: center;
+      text-decoration: none;
+      margin: 5px 2px;
+      transition: all 0.3s ease;
+      color: white;
+    }
+
+    .fa:hover {
+      opacity: 0.7;
+      transform: scale(1.2); /* Thu nhỏ icon khi rê chuột vào */
+    }
+
+    /* Màu và chiều cao của thanh ngang */
+    .horizontal-bar {
+      background-color: black;
+      height: 47px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 1000; /* Đảm bảo thanh ngang hiển thị trên cùng */
+    }
+    .horizontal-bar-bottom {
+      background-color: black;
+      height: 86px;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+    }
+    /* Icon ở góc dưới bên phải */
+    .social-icons {
+      position: fixed;
+      bottom: 20px;
+      right: 200px;
+      z-index: 1000; /* Đảm bảo icon hiển thị trên cùng */
+    }
+  </style>
+</head>
+
+<body>
+  <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    <div style="margin:50px auto;width:70%;padding:20px 0">
+      <div style="border-bottom:1px solid #eee">
+        <a href="" style="font-size:2.4em;color: #00466a;text-decoration:none;font-weight:600">Amuse Stuff</a>
+      </div>
+
+      <p>Amuse Stuff cảm ơn bạn đã sử dụng dịch vũ đây là mã OTP của bạn</p>
+      <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">
+        {{OTP}}</h2>
+      <p style="font-size:0.9em;">Regards,<br />Amuse Gift</p>
+      <hr style="border:none;border-top:1px solid #eee" />
+    </div>
+  </div>
+
+   <!-- Thanh ngang màu đen -->
+   <div class="horizontal-bar"></div>
+   <div class="horizontal-bar-bottom"></div>
+   <!-- Icon ở góc dưới bên phải -->
+  <div class="social-icons">
+    <a href="#" class="fa fa-facebook"></a>
+    <a href="#" class="fa fa-instagram"style="color:red"></a>
+    <a href="#" class="fa fa-youtube"></a>
+   
+    
+  </div>
+</body>
+
+</html>

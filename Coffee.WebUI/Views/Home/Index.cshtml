@@ -1,0 +1,199 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+@using Coffee.DATA.Models
+
+<main>
+    <!-- hero area start -->
+    
+    <!-- hero area end -->
+    <!-- feature slider start -->
+    
+    <!-- feature slider end -->
+    <!-- about area start -->
+    
+    <!-- about area end -->
+    <!-- populer menu area start -->
+    <section class="hero__area hero__area--2 position-relative custom-padding">
+        @* <span class="shape shape__1 position-absolute"><img src="assets/images/shape/hero-shape-2-1.png" alt=""></span>
+        <span class="shape shape__2 position-absolute"><img src="assets/images/shape/hero-shape-2-2.png" alt=""></span> *@
+        <div class="container-fluid custom-width">
+            <div class="row mm-reverse">
+                <div class="col-xl-6 col-lg-7 align-self-center">
+                    <div class="hero__content hero__content--2 position-relative">
+                        <h1 class="title mb-10">
+                            Amuse <br>
+                            Stuff
+                        </h1>
+                        <p>AmuseStuff chúng tôi cam kết cho bạn những trải nghiệm tốt nhất khi sử dụng các sản phẩm và dịch vụ bên chúng tôi.</p>
+                        <div class="btns mt-45 d-flex align-items-center justify-content-start">
+                            <a href="/lien-he" class="site-btn">Liên Hệ</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-5">
+                    <div class="hero__thumb hero__thumb--2 position-relative">
+                        <img src="assets/images/menu/menu1xoaphong.png" alt="img">
+                        @* <a href="http://www.youtube.com/embed/4xe72U7mXNg?rel=0&amp;controls=0&amp;showinfo=0" data-rel="lightcase:myCollection" data-animation="fadeInLeft" class="video-btn video-btn__2 d-flex align-items-center"><i class="fas fa-play"></i><span class="border-effect">play video</span></a> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="about__area about__area--2 grey-bg position-relative pt-120 pb-130">
+        @*  <span class="shape shape__1 position-absolute"><img src="assets/images/shape/about-shape-2-1.png" alt=""></span>
+        <span class="shape shape__2 position-absolute"><img src="assets/images/shape/about-shape-2-2.png" alt=""></span> *@
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-5 col-lg-7">
+                    <div class="about__left about__left--2 position-relative">
+                        <img class="big" src="assets/images/menu/menu3xoaphong.png" alt="img">
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+    <section class="testimonial__area pt-115 pb-110 position-relative bg_img" data-overlay="dark" data-opacity="5" data-background="/assets/images/bg/amuse.jpg">
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 text-center">
+                    <div class="section-heading mb-40">
+                        @* <span class="sub-title">BÌNH PHẨM</span> *@
+                        <h2 class="title">Đánh giá của khách hàng</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row g-0">
+                <div class="col-xl-12">
+                    <div class="testimonial__active owl-carousel slider-nav">
+                        <div class="testimonial__item text-center">
+                            <div class="row g-0 justify-content-center">
+                                <div class="col-xl-8">
+                                    <span class="quote mb-20">
+                                        <img src="assets/images/icons/t-quote.png" alt="">
+                                    </span>
+                                    <p>Quán có không gian xanh mát, yên tĩnh, thích hợp cho những ai muốn tìm một nơi để học tập, làm việc hay đơn giản là thư giãn sau giờ học tập và làm việc căng thẳng. Cà phê ở đây ngon, nguyên chất, giá cả hợp lý. Nhân viên quán thân thiện, nhiệt tình.</p>
+                                    <div class="author-info mt-35">
+                                        <div class="content">
+                                            <h4 class="name">Anh Trịnh Xuân Vinh Quy</h4>
+                                            <span class="designation">Khách hàng thân thiết</span>
+
+                                        </div>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="testimonial__item text-center">
+                            <div class="row g-0 justify-content-center">
+                                <div class="col-xl-8">
+                                    <span class="quote mb-20">
+                                        <img src="assets/images/icons/t-quote.png" alt="">
+                                    </span>
+                                    <p>Quán có không gian rộng rãi, thoáng mát, được thiết kế đẹp mắt. Menu đồ uống đa dạng, phong phú, nhiều lựa chọn. Phục vụ nhanh chóng, chuyên nghiệp.</p>
+                                    <div class="author-info mt-35">
+                                        <div class="content">
+                                            <h4 class="name">Chị Nguyễn Thuỳ Dung</h4>
+                                            <span class="designation">Khách hàng thân thiết</span>
+                                        </div>
+                                        <div class="thumb mb-25">
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="popular-menu__area grey-bg position-relative pb-120">
+        <span class="shape shape__1 position-absolute"><img src="assets/images/shape/menu-shape-1.png" alt="" /></span>
+        <span class="shape shape__2 position-absolute"><img src="assets/images/shape/menu-shape-2.png" alt="" /></span>
+        <span class="shape shape__3 position-absolute"><img src="assets/images/shape/menu-shape-3.png" alt="" /></span>
+        <span class="shape shape__4 position-absolute"><img src="assets/images/shape/menu-shape-4.png" alt="" /></span>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-12 text-center">
+                    <div class="section-heading section-heading__black mb-40">
+                        <h2 class="title">Thực đơn giảm giá</h2>
+                    </div>
+                </div>
+            </div>
+            <div id="popular-menu-grid" class="row popular-menu__grid mt-none-30">
+                <div class="col-xl-4 col-lg-6 col-md-6 grid-sizer"></div>
+                @{
+                    foreach (var item in ViewBag.ProductDiscount as List<Product>)
+                    {
+                        <div class="col-xl-4 col-lg-6 col-md-6 grid-item mt-30">
+                            <div class="popular-menu__item">
+                                <div class="popular-menu__thumb">
+                                    <img src="@item.Image" alt="@item.Name">
+                                </div>
+                                <div class="popular-menu__content text-center">
+                                    <h2 class="title">
+                                        <a style="display: inline-block;width: 85%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" href="/san-pham/@item.Url-@item.Id">@item.Name</a>
+                                    </h2>
+                                    <div class="pp__price d-flex align-items-center justify-content-center">
+                                        <h6 class="label">Giá - </h6>
+                                        <span class="price"> @Convert.ToInt32(item.DiscountPrice).ToString("C0", new System.Globalization.CultureInfo("vi-VN")).Replace(",", ".") / <span class="regular"><del>@Convert.ToInt32(item.Price).ToString("C0", new System.Globalization.CultureInfo("vi-VN")).Replace(",", ".") </del></span></span>
+                                    </div>
+                                    <div class="pp__action pp__action--2 mt-15 d-flex align-items-center justify-content-center">
+                                        @if (Convert.ToInt32(item.Quantity) > 0)
+                                        {
+                                            <div class="cart d-flex align-items-center justify-content-center">
+                                                <a href="javascript:void(0)" onclick="addCart('@item.Id',1)"><i class="fal fa-shopping-basket"></i></a>
+                                            </div>
+                                        }
+                                        <div class="view d-flex align-items-center justify-content-center">
+                                            <a href="/san-pham/@item.Url-@item.Id"><i class="fal fa-eye"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- populer menu area end -->
+    <!-- testimonail area start -->
+    
+    <!-- testimonail area end -->
+    <!-- top grade area start -->
+   
+    <!-- top grade area end -->
+    <!-- blog area start -->
+    
+    <!-- blog area end -->
+</main>
+@section Scripts {
+    <script>
+        function addCart(productId, quantity) {
+            console.log(quantity);
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: {
+                    product: { Id: productId },
+                    quantity: quantity
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showAlertModal('success', 'Thêm vào giỏ hàng thành công!');
+                        updateCartCount();
+                    } else {
+                        showAlertModal('danger', response.message);
+                    }
+                }
+            });
+
+        }
+    </script>
+}
