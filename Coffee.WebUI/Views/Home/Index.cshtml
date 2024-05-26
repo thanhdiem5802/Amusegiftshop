@@ -15,7 +15,7 @@
     
     <!-- about area end -->
     <!-- populer menu area start -->
-    <section class="hero__area hero__area--2 position-relative custom-padding">
+    <section class="hero__area hero__area--2 position-relative custom-padding" style="background:#010103">
         @* <span class="shape shape__1 position-absolute"><img src="assets/images/shape/hero-shape-2-1.png" alt=""></span>
         <span class="shape shape__2 position-absolute"><img src="assets/images/shape/hero-shape-2-2.png" alt=""></span> *@
         <div class="container-fluid custom-width">
@@ -24,9 +24,9 @@
                     <div class="hero__content hero__content--2 position-relative">
                         <h1 class="title mb-10">
                             Amuse <br>
-                            Stuff
+                            GIFT
                         </h1>
-                        <p>AmuseStuff chúng tôi cam kết cho bạn những trải nghiệm tốt nhất khi sử dụng các sản phẩm và dịch vụ bên chúng tôi.</p>
+                        <p>AmuseGift chúng tôi cam kết cho bạn những trải nghiệm tốt nhất khi sử dụng các sản phẩm và dịch vụ bên chúng tôi.</p>
                         <div class="btns mt-45 d-flex align-items-center justify-content-start">
                             <a href="/lien-he" class="site-btn">Liên Hệ</a>
                         </div>
@@ -57,12 +57,13 @@
         </div>
     </section>
     <section class="testimonial__area pt-115 pb-110 position-relative bg_img" data-overlay="dark" data-opacity="5" data-background="/assets/images/bg/amuse.jpg">
-        <div class="container">
+        <div class="container" style="margin-top: -112px;">
+
             <div class="row">
                 <div class="col-xl-12 text-center">
                     <div class="section-heading mb-40">
                         @* <span class="sub-title">BÌNH PHẨM</span> *@
-                        <h2 class="title">Đánh giá của khách hàng</h2>
+                        <h2 class="title" >Đánh giá của khách hàng</h2>
                     </div>
                 </div>
             </div>
@@ -73,16 +74,18 @@
                             <div class="row g-0 justify-content-center">
                                 <div class="col-xl-8">
                                     <span class="quote mb-20">
-                                        <img src="assets/images/icons/t-quote.png" alt="">
+                                        
                                     </span>
                                     <p>Quán có không gian xanh mát, yên tĩnh, thích hợp cho những ai muốn tìm một nơi để học tập, làm việc hay đơn giản là thư giãn sau giờ học tập và làm việc căng thẳng. Cà phê ở đây ngon, nguyên chất, giá cả hợp lý. Nhân viên quán thân thiện, nhiệt tình.</p>
                                     <div class="author-info mt-35">
+                                        <div class="thumb mb-25">
+                                            <img src="assets/images/author/avatarboyresize.png" alt="" height="100px" width="100px">
+
+                                        </div>
                                         <div class="content">
                                             <h4 class="name">Anh Trịnh Xuân Vinh Quy</h4>
                                             <span class="designation">Khách hàng thân thiết</span>
-
                                         </div>
-                                        
                                     </div>
                                 </div>
                             </div>
@@ -91,16 +94,16 @@
                             <div class="row g-0 justify-content-center">
                                 <div class="col-xl-8">
                                     <span class="quote mb-20">
-                                        <img src="assets/images/icons/t-quote.png" alt="">
+                                       
                                     </span>
                                     <p>Quán có không gian rộng rãi, thoáng mát, được thiết kế đẹp mắt. Menu đồ uống đa dạng, phong phú, nhiều lựa chọn. Phục vụ nhanh chóng, chuyên nghiệp.</p>
                                     <div class="author-info mt-35">
+                                        <div class="thumb mb-25">
+                                            <img src="assets/images/author/avatargirlresize.png" alt="">
+                                        </div>
                                         <div class="content">
                                             <h4 class="name">Chị Nguyễn Thuỳ Dung</h4>
                                             <span class="designation">Khách hàng thân thiết</span>
-                                        </div>
-                                        <div class="thumb mb-25">
-                                            
                                         </div>
                                     </div>
                                 </div>
@@ -112,21 +115,39 @@
         </div>
     </section>
     <section class="popular-menu__area grey-bg position-relative pb-120">
-        <span class="shape shape__1 position-absolute"><img src="assets/images/shape/menu-shape-1.png" alt="" /></span>
-        <span class="shape shape__2 position-absolute"><img src="assets/images/shape/menu-shape-2.png" alt="" /></span>
-        <span class="shape shape__3 position-absolute"><img src="assets/images/shape/menu-shape-3.png" alt="" /></span>
-        <span class="shape shape__4 position-absolute"><img src="assets/images/shape/menu-shape-4.png" alt="" /></span>
+        
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 text-center">
                     <div class="section-heading section-heading__black mb-40">
-                        <h2 class="title">Thực đơn giảm giá</h2>
+                        <h2 class="title">Amuse Gift</h2>
                     </div>
                 </div>
             </div>
-            <div id="popular-menu-grid" class="row popular-menu__grid mt-none-30">
-                <div class="col-xl-4 col-lg-6 col-md-6 grid-sizer"></div>
-                @{
+           
+
+            <div class="row">
+                <div class="col-xl-12 text-center">
+                    <div class="popular-menu__wrapper m-auto d-inline-block">
+                        <div class="popular-menu__filter d-flex justify-content-center align-items-center mb-55">
+                            <button class="active" data-filter="*">Tất cả</button>
+                            @* <button data-filter=".cat1">chocolate</button> *@
+                            <button data-filter="cat1">Mica</button>
+                            <button data-filter="cat6">Kính</button>
+                            <button data-filter="trend">TRENDING</button>
+                            <button data-filter="disaccount">GIảm Giá</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* <div id="productsContainer" class="row popular-menu__grid mt-none-30">
+                <!-- Sản phẩm sẽ được thêm vào đây -->
+            </div> *@
+            <div id="productsContainer" class="row popular-menu__grid mt-none-30 animated">
+
+                @* <div class="col-xl-4 col-lg-6 col-md-6 grid-sizer"></div> *@
+                @* @{
                     foreach (var item in ViewBag.ProductDiscount as List<Product>)
                     {
                         <div class="col-xl-4 col-lg-6 col-md-6 grid-item mt-30">
@@ -158,8 +179,47 @@
                         </div>
                     }
                 }
-            </div>
+                 *@
+                
+                
+                
+                
         </div>
+            @{
+                foreach (var item in ViewBag.ProductDiscount as List<Product>)
+                {
+                    // <div class="col-xl-4 col-lg-6 col-md-6 grid-item mt-30">
+                    //     <div class="popular-menu__item">
+                    //         <div class="popular-menu__thumb">
+                    //             <img src="@item.Image" alt="@item.Name">
+                    //         </div>
+                    //         <div class="popular-menu__content text-center">
+                    //             <h2 class="title">
+                    //                 <a style="display: inline-block;width: 85%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" href="/san-pham/@item.Url-@item.Id">@item.Name</a>
+                    //             </h2>
+                    //             <div class="pp__price d-flex align-items-center justify-content-center">
+                    //                 <h6 class="label">Giá - </h6>
+                    //                 <span class="price"> @Convert.ToInt32(item.DiscountPrice).ToString("C0", new System.Globalization.CultureInfo("vi-VN")).Replace(",", ".") / <span class="regular"><del>@Convert.ToInt32(item.Price).ToString("C0", new System.Globalization.CultureInfo("vi-VN")).Replace(",", ".") </del></span></span>
+                    //             </div>
+                    //             <div class="pp__action pp__action--2 mt-15 d-flex align-items-center justify-content-center">
+                    //                 @if (Convert.ToInt32(item.Quantity) > 0)
+                    //                 {
+                    //                     <div class="cart d-flex align-items-center justify-content-center">
+                    //                         <a href="javascript:void(0)" onclick="addCart('@item.Id',1)"><i class="fal fa-shopping-basket"></i></a>
+                    //                     </div>
+                    //                 }
+                    //                 <div class="view d-flex align-items-center justify-content-center">
+                    //                     <a href="/san-pham/@item.Url-@item.Id"><i class="fal fa-eye"></i></a>
+                    //                 </div>
+                    //             </div>
+                    //         </div>
+                    //     </div>
+                    // </div>
+                }
+            }
+            
+        </div>
+        
     </section>
 
     <!-- populer menu area end -->
@@ -195,5 +255,82 @@
             });
 
         }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $.ajax({
+                url: '/Product/GetAllProduct', // Replace 'ControllerName' with your actual controller name
+                type: 'GET',
+                dataType: 'json', // Specify that you're expecting JSON data in response
+                success: function (response) {
+                    if (response.success) {
+                        $.each(response.result, function (index, item) {
+                            console.log("Kết quả là" + item, item.name,item.id)
+                            var productHtml = `
+                                    <div class="col-xl-4 col-lg-6 col-md-6 grid-item mt-30 cat${item.categoryId} animated fadeIn ${item.discountPrice ? 'disaccount' : ''} ${item.keywords === 'TREND' ? 'trend' : ''}">
+
+                                            <div class="popular-menu__item">
+                                        <div class="popular-menu__thumb">
+                                            <img src="${item.image}" alt="${item.name}">
+                                        </div>
+                                        <div class="popular-menu__content text-center">
+                                            <h2 class="title">
+                                                <a style="display: inline-block;width: 85%;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;" href="/san-pham/${item.url}-${item.id}">${item.name}</a>
+                                            </h2>
+                                            <div class="pp__price d-flex align-items-center justify-content-center">
+                                                <h6 class="label">Giá - </h6>
+                                                    <span class="price">
+                                                            ${item.discountPrice != null ? item.discountPrice + ' / ' : ''}
+                                                            <span class="regular">${item.discountPrice != null ? '<del>' + item.price + '</del>' : item.price}</span>
+                                                    </span>
+                                                            </div>
+                                            <div class="pp__action pp__action--2 mt-15 d-flex align-items-center justify-content-center">
+                                                ${item.quantity > 0 ?
+                                    `<div class="cart d-flex align-items-center justify-content-center">
+                                                        <a href="javascript:void(0)" onclick="addCart('${item.id}',1)"><i class="fal fa-shopping-basket"></i></a>
+                                                    </div>`
+                                    : ''
+                                }
+                                                <div class="view d-flex align-items-center justify-content-center">
+                                                    <a href="/san-pham/${item.url}-${item.id}"><i class="fal fa-eye"></i></a>
+                                                </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            $('#productsContainer').append(productHtml);
+                        });
+                    } else {
+                        console.error('Error occurred while fetching products:', response.error);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error occurred while fetching products:', error);
+                }
+            });
+        });
+        document.querySelectorAll('.popular-menu__filter button').forEach(button => {
+            button.addEventListener('click', function () {
+                const filterValue = this.getAttribute('data-filter'); // Lấy giá trị của thuộc tính data-filter
+
+                // Hiển thị hoặc ẩn các sản phẩm tương ứng với lớp CSS được chọn
+                document.querySelectorAll('.grid-item').forEach(item => {
+                    if (filterValue === '*' || item.classList.contains(filterValue)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+
+                // Loại bỏ lớp CSS 'active' khỏi tất cả các nút menu, sau đó thêm lớp CSS 'active' vào nút được nhấp
+                document.querySelectorAll('.popular-menu__filter button').forEach(button => {
+                    button.classList.remove('active');
+                });
+                this.classList.add('active');
+            });
+        });
+
     </script>
 }

@@ -9,24 +9,34 @@
         <div class="animation-preloader">
             <div class="spinner"></div>
             <div class="txt-loading">
-                <span data-text-preloader="C" class="letters-loading">
-                    C
-                </span>
                 <span data-text-preloader="A" class="letters-loading">
                     A
                 </span>
-                <span data-text-preloader="F" class="letters-loading">
-                    F
+                <span data-text-preloader="M" class="letters-loading">
+                    M
+                </span>
+                <span data-text-preloader="U" class="letters-loading">
+                    U
+                </span>
+                <span data-text-preloader="S" class="letters-loading">
+                    S
                 </span>
                 <span data-text-preloader="E" class="letters-loading">
                     E
                 </span>
-                <span data-text-preloader="N" class="letters-loading">
-                    N
+                <span data-text-preloader="G" class="letters-loading">
+                    G
                 </span>
-                <span data-text-preloader="A" class="letters-loading">
-                    A
+                <span data-text-preloader="I" class="letters-loading">
+                    I
                 </span>
+                <span data-text-preloader="F" class="letters-loading">
+                    F
+                </span>
+                <span data-text-preloader="T" class="letters-loading">
+                    T
+                </span>
+
             </div>
         </div>
         <div class="loader">
@@ -35,13 +45,13 @@
                     <div class="bg"></div>
                 </div>
                 @* <div class="col-3 loader-section section-left">
-                    <div class="bg"></div>
+                <div class="bg"></div>
                 </div>
                 <div class="col-3 loader-section section-right">
-                    <div class="bg"></div>
+                <div class="bg"></div>
                 </div>
                 <div class="col-3 loader-section section-right">
-                    <div class="bg"></div>
+                <div class="bg"></div>
                 </div> *@
             </div>
         </div>
@@ -51,14 +61,18 @@
 <!-- header start -->
 
 <header class="site-header">
-    <div class="header-top header-top__2">
+    <div class="header-top header-top__2" style="background:#010103">
         <div class="container-fluid custom-width">
             <div class="row">
                 <div class="col-xl-6 col-lg-12 align-self-center">
                     <div class="header-top__left d-flex align-items-center">
                         <ul class="header-top__infos list-unstyled d-flex align-items-center mb-0">
-                            <li><a href="tel:0946453657"><i class="fas fa-phone-square"></i> 0946453657</a></li>
-                            <li><a href="https://maps.app.goo.gl/tbNeHoq2WYpJ5ZnM6" target="_blank"><i class="fa fa-map-marker-alt"></i> 451 Tôn Đản, Đà Nẵng</a></li>
+                            <li><a href="tel:0935755845"><i class="fas fa-phone-square"></i> 0935755845</a></li>
+                            <li>
+                                <a href="https://maps.app.goo.gl/PkEWSMR6gBagXZqs9" target="_blank">
+                                    <i class="fa fa-map-marker-alt"></i> Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng 
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -80,9 +94,9 @@
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <div class="pl-10 pr-10">
-                                <a asp-controller="Login" asp-action="Index" style="color: #6c6c6c;text-decoration: none;font-weight: 700;">Đăng nhập</a>
+                                <a asp-controller="Login" asp-action="Index" style="color: #dc3545;text-decoration: none;font-weight: 700;">Đăng nhập</a>
                                 <span class="pl-5 pr-5">/</span>
-                                <a asp-controller="Login" asp-action="Register" style="color: #6c6c6c;text-decoration: none;font-weight: 700;">Đăng kí</a>
+                                <a asp-controller="Login" asp-action="Register" style="color: #ffc107;text-decoration: none;font-weight: 700;">Đăng kí</a>
                             </div>
                         }
                     </div>
@@ -90,7 +104,7 @@
             </div>
         </div>
     </div>
-    <div class="menu-area menu-area__3 menu-area__4">
+    <div class="menu-area menu-area__3 menu-area__4" style="background:#010103">
         <div class="container-fluid custom-width custom-width__2">
             <div class="row d-none d-xl-flex">
                 <div class="col-xl-5 col-lg-4 col-md-5 align-self-center ">
@@ -105,7 +119,7 @@
                                     <a href="#0">Cửa Hàng</a>
                                     <ul class="sub-menu">
                                         <li><a asp-controller="Product" asp-action="Index">Cửa hàng</a></li>
-                                        <li><a asp-controller="Home" asp-action="Reservation">Đặt bàn</a></li>
+                                        <li><a asp-controller="Home" asp-action="Reservation">Đặt Hàng</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -115,7 +129,7 @@
                 <div class="col-xl-2 col-lg-2 d-none d-lg-block text-center align-self-center">
                     <div class="logo">
                         <a asp-controller="Home">
-                            <img src="~/assets/images/logo/logo-black.png" alt="img">
+                            <img src="~/assets/images/logo/logoamusexoaphong.png" alt="img">
                         </a>
                     </div>
                 </div>
@@ -240,7 +254,7 @@
     <div class="side-info__wrapper d-flex align-items-center justify-content-between">
         <div class="side-info__logo">
             <a href="index.html">
-                <img src="~/assets/images/logo/logo-black.png" alt="logo">
+                <img src="~/assets/images/logo/logoamusexoaphong.png" alt="logo">
             </a>
         </div>
         <div class="side-info__close">
@@ -256,8 +270,8 @@
              aria-labelledby="menu-tab-2-tab">
             <div class="side-info">
                 <div class="side-info__content mb-35">
-                    <h4 class="title mb-5">Về chúng tôi</h4>
-                    <p>Điều quan trọng là phải tự chăm sóc nỗi đau, sau đó là sự trưởng thành của bệnh nhân, nhưng đồng thời cũng sẽ có rất nhiều công việc và nỗi đau. Trên thực tế, để tìm hiểu cặn kẽ vấn đề, không ai có thể giúp chúng ta trừ khi chúng ta thu được lợi ích nào đó từ nó.</p>
+                    <h4 class="title mb-5">Amuse Gift</h4>
+                    <p>Gửi trọn yêu thương, lưu giữ kỷ niệm</p>
                     <a class="site-btn mt-20" href="contact.html">Liên hệ ngay</a>
                 </div>
                 <div class="contact__info--wrapper mt-15">
@@ -265,15 +279,17 @@
                     <ul class="contact__info list-unstyled">
                         <li>
                             <span><i class="fas fa-map-marker-alt"></i></span>
-                            <p>451 Tôn Đản, Đà Nẵng</p>
+                            <p>
+                                Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng 550000, Việt Nam
+                            </p>
                         </li>
                         <li>
                             <span><i class="fas fa-phone"></i></span>
-                            <p>+84946453657</p>
+                            <p>+84935755845</p>
                         </li>
                         <li>
                             <span><i class="fas fa-envelope-open-text"></i></span>
-                            <p>vinhquytrinh@gmail.com</p>
+                            <p>amusestuff001@gmail.com</p>
                         </li>
                     </ul>
                 </div>
@@ -293,7 +309,7 @@
     <div class="side-info__wrapper d-flex align-items-center justify-content-between">
         <div class="side-info__logo">
             <a href="index.html">
-                <img src="~/assets/images/logo/logo-black.png" alt="logo">
+                <img src="~/assets/images/logo/logoamusexoaphong.png" alt="logo">
             </a>
         </div>
         <div class="side-info__close">
@@ -302,8 +318,8 @@
     </div>
     <div class="side-info">
         <div class="side-info__content mb-35">
-            <h4 class="title mb-5">Về chúng tôi</h4>
-            <p>Điều quan trọng là phải tự chăm sóc nỗi đau, sau đó là sự trưởng thành của bệnh nhân, nhưng đồng thời cũng sẽ có rất nhiều công việc và nỗi đau. Trên thực tế, để tìm hiểu cặn kẽ vấn đề, không ai có thể giúp chúng ta trừ khi chúng ta thu được lợi ích nào đó từ nó.</p>
+            <h4 class="title mb-5">Amuse Gift</h4>
+            <p>Gửi trọn yêu thương, lưu giữ kỷ niệm</p>
             <a class="site-btn mt-20" href="contact.html">Liên hệ ngay</a>
         </div>
         <div class="contact__info--wrapper mt-15">
@@ -311,15 +327,15 @@
             <ul class="contact__info list-unstyled">
                 <li>
                     <span><i class="fas fa-map-marker-alt"></i></span>
-                    <p>451 Tôn Đản, Đà Nẵng</p>
+                    <p> Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng 550000, Việt Nam</p>
                 </li>
                 <li>
                     <span><i class="fas fa-phone"></i></span>
-                    <p>+84946453657</p>
+                    <p>+84935755845</p>
                 </li>
                 <li>
                     <span><i class="fas fa-envelope-open-text"></i></span>
-                    <p>vinhquytrinh@gmail.com</p>
+                    <p>amusestuff001@gmail.com</p>
                 </li>
             </ul>
         </div>

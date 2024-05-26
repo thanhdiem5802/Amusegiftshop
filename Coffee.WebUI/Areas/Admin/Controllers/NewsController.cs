@@ -30,7 +30,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            ViewBag.User = await _userRepository.GetAllAsync();
+            //ViewBag.User = await _userRepository.GetAllAsync();
             return View();
         }
         [HttpPost]
@@ -52,6 +52,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                     UserId = _user.First(x => x.Email == User.FindFirst(ClaimTypes.Email)?.Value).Id,
                     Status = false,
                     CreatedOn = DateTime.Now,
+                    
                 };
                 await _newRepository.InsertAsync(_new);
                 return Json(new { success = true, message = "Thêm bài viết thành công!" });

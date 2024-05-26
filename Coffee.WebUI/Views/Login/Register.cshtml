@@ -3,12 +3,73 @@
 }
 @section Styles {
     <link rel="stylesheet" href="~/assets/css/css_Login.css" />
+    <style>
+        /* Styles as provided */
+        .base-timer {
+            position: relative;
+            width: 5rem;
+            height: 3rem;
+            padding-left: 4rem;
+        }
+
+        .base-timer__svg {
+            transform: scaleX(-1);
+            width:38rem;
+            height: 7.5rem;
+            padding-bottom: 3rem;
+            margin-top:1rem;
+        }
+
+        .base-timer__circle {
+            fill: none;
+            stroke: none;
+        }
+
+        .base-timer__path-elapsed {
+            stroke-width: 7px;
+            stroke: grey;
+        }
+
+        .base-timer__path-remaining {
+            stroke-width: 7px;
+            stroke-linecap: round;
+            transform: rotate(90deg);
+            transform-origin: center;
+            transition: 1s linear all;
+            fill-rule: nonzero;
+            stroke: currentColor;
+        }
+
+        .base-timer__path-remaining.green {
+            color: rgb(65, 184, 131);
+        }
+
+        .base-timer__path-remaining.orange {
+            color: orange;
+        }
+
+        .base-timer__path-remaining.red {
+            color: red;
+        }
+
+        .base-timer__label {
+            position: absolute;
+            width: 5rem;
+            height: 7rem;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 29px;
+            color: #ff0018;
+            padding-bottom: 1rem;
+            padding-left: 19rem;
+        }
+    </style>
 }
 <center>
-    <div class="alert alert-success" role="alert" style="width: max-content; max-width: 500px">
-    </div>
-    <div class="alert alert-danger" role="alert" style="width: max-content; max-width: 500px">
-    </div>
+    <div id="alert-success" class="alert alert-success" role="alert" style="display: none; width: max-content; max-width: 500px"></div>
+    <div id="alert-danger" class="alert alert-danger" role="alert" style="display: none; width: max-content; max-width: 500px"></div>
 </center>
 <form asp-controller="Login" asp-action="Register" method="post">
     <div class="m-auto">
@@ -24,11 +85,15 @@
             <div id="pass">
                 <div class="mb-3">
                     <label class="form-label">Mã otp</label>
-                    <input class="form-control" name="otp" placeholder="Kiểm tra email để lấy otp" />
+                    <input class="form-control" style="width: 100% !important; font-size: 19px; padding-left: 10px" name="otp" placeholder="Kiểm tra email để lấy otp">
+                    <div id="app"></div>
+                    <button id="resendOtpBtn" class="btn btn-primary" style="display: none;margin-left:1rem;">Gửi Lại OTP</button>
+
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Họ và tên</label>
                     <input type="text" name="name" ty class="form-control" placeholder="Nhập họ và tên" />
+                    <div class="invalid-feedback" id="nameError"></div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Tên đăng nhập</label>
@@ -37,10 +102,13 @@
                 <div class="mb-3">
                     <label class="form-label">Mật khẩu</label>
                     <input type="password" name="pass" ty class="form-control" />
+                    <div class="invalid-feedback" id="passError"></div>
+
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Nhập lại mật khẩu</label>
                     <input type="password" name="cfpass" class="form-control" />
+                    <div class="invalid-feedback" id="cfPassError"></div>
                 </div>
                 <center>
                     <a href="javascript:void(0)" id="btnCreate" class="site-btn">Đăng ký</a>
@@ -53,6 +121,168 @@
 @section Scripts {
     <script src="~/assets/js/js_login.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const passInput = document.querySelector('input[name="pass"]');
+            const cfPassInput = document.querySelector('input[name="cfpass"]');
+            const nameInput = document.querySelector('input[name="name"]');
+            const nameError = document.getElementById('nameError');
+            const passError = document.getElementById('passError');
+            const cfPassError = document.getElementById('cfPassError');
+
+            function validatePassword() {
+                const password = passInput.value;
+                const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).{8,15}$/;
+
+                if (!regex.test(password)) {
+                    passError.textContent = 'Mật khẩu phải có độ dài từ 8 đến 15 ký tự, bao gồm chữ hoa, chữ thường, số, và ít nhất một ký tự đặc biệt.';
+                    passInput.classList.add('is-invalid');
+                    return false;
+                }
+                passError.textContent = '';
+                passInput.classList.remove('is-invalid');
+                return true;
+            }
+
+            function validateName() {
+                const name = nameInput.value;
+                const regex = /^[^<>;{}]*$/;
+
+                if (!regex.test(name)) {
+                    nameError.textContent = 'Tên không được có các kí tự đặc biệt';
+                    nameInput.classList.add('is-invalid');
+                    return false;
+                }
+                nameError.textContent = '';
+                nameInput.classList.remove('is-invalid');
+                return true;
+            }
+
+            function validateConfirmPassword() {
+                if (passInput.value !== cfPassInput.value) {
+                    cfPassError.textContent = 'Mật khẩu và xác nhận mật khẩu không khớp.';
+                    cfPassInput.classList.add('is-invalid');
+                    return false;
+                }
+                cfPassError.textContent = '';
+                cfPassInput.classList.remove('is-invalid');
+                return true;
+            }
+            
+
+
+
+
+            passInput.addEventListener('input', validatePassword);
+            cfPassInput.addEventListener('input', validateConfirmPassword);
+            nameInput.addEventListener('input', validateName);
+        });
+            
+        // Timer script
+        const FULL_DASH_ARRAY = 283;
+        const WARNING_THRESHOLD = 60;
+        const ALERT_THRESHOLD = 30;
+
+        const COLOR_CODES = {
+            info: { color: "green" },
+            warning: { color: "orange", threshold: WARNING_THRESHOLD },
+            alert: { color: "red", threshold: ALERT_THRESHOLD }
+        };
+
+        const TIME_LIMIT = 120;
+        let timePassed = 0;
+        let timeLeft = TIME_LIMIT;
+        let timerInterval = null;
+        let remainingPathColor = COLOR_CODES.info.color;
+
+        function initializeTimer() {
+            document.getElementById("app").innerHTML = `
+                    <div class="base-timer">
+                        <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                            <g class="base-timer__circle">
+                                <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+                                <path
+                                    id="base-timer-path-remaining"
+                                    stroke-dasharray="283"
+                                    class="base-timer__path-remaining ${remainingPathColor}"
+                                    d="
+                                        M 50, 50
+                                        m -45, 0
+                                        a 45,45 0 1,0 90,0
+                                        a 45,45 0 1,0 -90,0
+                                    "
+                                ></path>
+                            </g>
+                        </svg>
+                        <span id="base-timer-label" class="base-timer__label">${formatTime(timeLeft)}</span>
+                    </div>
+                `;
+
+            startTimer();
+        }
+
+        function onTimesUp() {
+            clearInterval(timerInterval);
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timePassed++;
+                timeLeft = TIME_LIMIT - timePassed;
+                document.getElementById("base-timer-label").innerHTML = formatTime(timeLeft);
+                setCircleDasharray();
+                setRemainingPathColor(timeLeft);
+
+                if (timeLeft === 0) {
+                    onTimesUp();
+                }
+            }, 1000);
+        }
+
+        function formatTime(time) {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+
+            if (seconds < 10) {
+                seconds = `0${seconds}`;
+            }
+
+            return `${minutes}:${seconds}`;
+        }
+
+
+        function setRemainingPathColor(timeLeft) {
+            const { alert, warning, info } = COLOR_CODES;
+            const path = document.getElementById("base-timer-path-remaining");
+
+            if (timeLeft <= alert.threshold) {
+                path.classList.remove(warning.color);
+                path.classList.add(alert.color);
+            } else if (timeLeft <= warning.threshold) {
+                path.classList.remove(info.color);
+                path.classList.add(warning.color);
+            } else {
+                path.classList.remove(alert.color, warning.color);
+                path.classList.add(info.color);
+            }
+        }
+
+        function calculateTimeFraction() {
+            const rawTimeFraction = timeLeft / TIME_LIMIT;
+            return rawTimeFraction - (1 / TIME_LIMIT) * (1 - rawTimeFraction);
+        }
+
+        function setCircleDasharray() {
+            const circleDasharray = `${(calculateTimeFraction() * FULL_DASH_ARRAY).toFixed(0)} ${FULL_DASH_ARRAY}`;
+            document.getElementById("base-timer-path-remaining").setAttribute("stroke-dasharray", circleDasharray);
+        }
+        function resetTimer() {
+            clearInterval(timerInterval); // Dừng bộ đếm hiện tại
+            timePassed = 0;
+            timeLeft = TIME_LIMIT;
+            remainingPathColor = COLOR_CODES.info.color;
+            initializeTimer(); // Khởi động lại bộ đếm thời gian
+        }
+
         $(document).ready(function () {
             var alerts = document.querySelectorAll('.alert');
             alerts.forEach(function (alert) {
@@ -62,73 +292,92 @@
             $("#next").click(function () {
                 var email = $("input[name='email']").val();
                 $("#next").hide();
-                showAlertModal('success', 'Chúng tôi đã gửi mã OTP cho bạn');
+                showAlertModal('success', 'Vui lòng kiểm tra email để lấy mã otp');
                 if (isValidEmail(email)) {
-                    $("#pass").show();
-                    $("#next").hide();
                     $.ajax({
-
                         type: "POST",
                         url: "/send-otp",
                         data: { email: email },
                         success: function (response) {
                             if (response.success) {
-                               
+                                $("#pass").show();
+                                $("#next").hide();
                                 $("input[name='email']").prop('disabled', true);
                                 showAlertModal('success', response.message);
+                                document.getElementById('resendOtpBtn').style.display = 'block';
+                                initializeTimer();
                             } else {
                                 showAlertModal('danger', response.message);
                                 $("#next").show();
                             }
                         },
                         error: function (xhr, status, error) {
-                            // Xử lý lỗi (nếu có)
                             console.error("Error:", error);
                         }
                     });
-                }
-                else {
+                } else {
                     showAlertModal('danger', "Vui lòng nhập email!");
                 }
             });
-        });
-        $("#btnCreate").click(function () {
-            var email = $("input[name='email']").val();
-            var pass = $("input[name='pass']").val();
-            var cfpass = $("input[name='cfpass']").val();
-            var otp = $("input[name='otp']").val();
-            var name = $("input[name='name']").val();
-            var username = $("input[name='username']").val();
-            if (name === '' || email === '' || pass === '' || cfpass === '' || otp === '' || username ==='') {
-                showAlertModal('danger', 'Vui lòng điền đầy đủ thông tin!');
-                return;
-            }
-            if (pass === cfpass) {
-                $('#btnCreate').hide();
+            $("#resendOtpBtn").click(function () {
+                var email = $("input[name='email']").val();
                 $.ajax({
-                    url: "/Login/Register",
-                    method: "POST",
-                    data: { email: email, password: pass, otp: otp, name: name, username: username },
+                    type: "POST",
+                    url: "/resend-otp",
+                    data: { resend: email },
                     success: function (response) {
                         if (response.success) {
                             showAlertModal('success', response.message);
-                            setTimeout(function () {
-                                window.location.href = '/login'
-                            }, 5000);
+                            initializeTimer();
                         } else {
                             showAlertModal('danger', response.message);
-                            $('#btnCreate').show();
                         }
                     },
                     error: function (xhr, status, error) {
-                        showAlertModal('danger', response.message);
-                        $('#btnCreate').show();
+                        console.error("Error:", error);
                     }
                 });
-            } else {
-                showAlertModal('danger', "Mật khẩu không khớp!");
-            }
+            });
 
+            $("#btnCreate").click(function () {
+                var email = $("input[name='email']").val();
+                var pass = $("input[name='pass']").val();
+                var cfpass = $("input[name='cfpass']").val();
+                var otp = $("input[name='otp']").val();
+                var name = $("input[name='name']").val();
+                var username = $("input[name='username']").val();
+                if (name === '' || email === '' || pass === '' || cfpass === '' || otp === '' || username === '') {
+                    showAlertModal('danger', 'Vui lòng điền đầy đủ thông tin!');
+                    return;
+                }
+                if (pass === cfpass) {
+                    $('#btnCreate').hide();
+                    $.ajax({
+                        url: "/Login/Register",
+                        method: "POST",
+                        data: { email: email, password: pass, otp: otp, name: name, username: username },
+                        success: function (response) {
+                            if (response.success) {
+                                showAlertModal('success', response.message);
+                                setTimeout(function () {
+                                    window.location.href = '/login'
+                                }, 5000);
+                            } else {
+                                showAlertModal('danger', response.message);
+                                $('#btnCreate').show();
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            showAlertModal('danger', response.message);
+                            $('#btnCreate').show();
+                        }
+                    });
+                } else {
+                    showAlertModal('danger', "Mật khẩu không khớp!");
+                }
+            });
         });
+        
     </script>
+
 }

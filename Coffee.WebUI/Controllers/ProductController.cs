@@ -1,9 +1,11 @@
-﻿using Coffee.DATA;
+﻿using AutoMapper;
+using Coffee.DATA;
 using Coffee.DATA.Models;
 using Coffee.DATA.Repository;
 using Coffee.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Protocol.Core.Types;
 using System.Linq;
 using X.PagedList;
 
@@ -12,10 +14,14 @@ namespace Coffee.WebUI.Controllers
     public class ProductController : Controller
     {
         private readonly DbCoffeeDbContext _db;
-
-        public ProductController(DbCoffeeDbContext dbCoffeeDbContext)
+        private readonly IMapper _mapper;
+        private readonly IRepository<Product> _repository;
+        public ProductController(DbCoffeeDbContext dbCoffeeDbContext,IMapper mapper, IRepository<Product> repository)
         {
             _db = dbCoffeeDbContext;
+            _mapper = mapper;
+            _repository = repository;
+
         }
         public IActionResult Index(string? query, string? search, int? searchCategory, int? page, string? searchString)
         {
@@ -77,8 +83,14 @@ namespace Coffee.WebUI.Controllers
             ViewBag.TopProducts = _db.Products.OrderByDescending(x=>x.Id).Take(4).ToList();
             return View(products);
         }
-
-        public IActionResult ProductDetails(string url)
+        public async Task<IActionResult> GetAllProduct()
+        {
+            var products = await _repository.GetAllAsync();
+            products = products.Where(x => x.Status != null).ToList();
+            var result = products.OrderBy(x => Guid.NewGuid()).ToList();
+            return Json(new { success = true, result });
+        }
+        public IActionResult ProductDetails(string url) 
         {
             ViewBag.Name = url;
             return View();

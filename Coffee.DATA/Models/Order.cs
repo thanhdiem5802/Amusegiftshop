@@ -9,7 +9,7 @@ namespace Coffee.DATA.Models
     public class Order : BaseEntities
     {
         public int? UserId { get; set; }
-        public DateTime? CreateOn { get; set; }
+        
         public string? Province { get; set; }
         public string? District { get; set; }
         public string? Town { get; set; }

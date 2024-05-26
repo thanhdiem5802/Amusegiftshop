@@ -2,7 +2,468 @@
     ViewData["AdminTitle"] = "Admin";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
-<a class="nav-link" asp-controller="User" asp-action="Index">
-    <i class="fas fa-fw fa-tachometer-alt"></i>
-    <span>Dashboard</span>
-</a>
+
+
+@{
+    // Lấy năm hiện tại
+    var currentYear = DateTime.Now.Year;
+    var currentMonth = DateTime.Now.Month;
+}
+<!-- Content Row -->
+
+<!-- Content Row -->
+<div class="row">
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2" style="background-color: #243665;">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="color:#fff">
+                            Earnings (Monthly)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" style="color:#FFF748">$40,000</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Earnings (Monthly) Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2" style="background:#ffc229">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="color:#292826; font-size: 1.1rem;">
+                            Earnings (Annual)
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-900" style="color:#292826">$215,000</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-dollar-sign fa-2x text-gray-300" style="color:#fff "></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Task Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2" style="background:">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1" style="font-size:1.1rem">
+                            Tasks
+                        </div>
+                        <div class="row no-gutters align-items-center">
+                            <div class="col-auto">
+                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-700">50%</div>
+                            </div>
+                            <div class="col">
+                                <div class="progress progress-sm mr-2">
+                                    <div id="my-progress-bar" class="progress-bar bg-info" role="progressbar"
+                                         style="width: 50%" aria-valuenow="50" aria-valuemin="0"
+                                         aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clipboard-list fa-2x text-gray-300" style="color:#1cc88a"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Requests Card Example -->
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2" style="background:#295f2d">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="color:#ffe67c">
+                            Pending Requests
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-600" style= "color:#ffe67c !important" >18</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-comments fa-2x text-gray-300" style="color:#ffe67c"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    
+
+    <!-- Area Chart -->
+    <div class="col-xl-8 col-lg-7">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Doanh thu năm @currentYear</h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                         aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">Dropdown Header:</div>
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-area">
+                    <canvas id="myAreaChart"></canvas>
+                    <hr>
+                    Báo cáo thu nhập năm
+                    <code>@currentYear</code>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="mt-3 col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Category Percent</h6>
+                <div class="dropdown no-arrow">
+                    <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                         aria-labelledby="dropdownMenuLink">
+                        <div class="dropdown-header">Dropdown Header:</div>
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+                <div class="chart-pie pt-4 pb-2">
+                    <canvas id="myPieChart"></canvas>
+                </div>
+                <div class="mt-4 text-center small" id="legend"></div> <!-- Added id for the legend -->
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow mb-4">
+
+        <div class="card-body">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive-sm">
+                            <table id="dataTable" class="table table-bordered" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3" style="text-align: center;">TRENDING</th>
+                                    </tr>
+                                    <tr>
+                                        <th>Tên</th>
+                                        <th>Hình ảnh</th>
+                                        <th>Giá</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Thông tin sản phẩm sẽ được điền vào đây -->
+                                    <!-- Sử dụng Ajax để điền thông tin sản phẩm -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mt-3 col-xl-4 col-lg-5">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3" style="padding-top:2rem">
+                <h6 class="m-0 font-weight-bold text-primary">Thống kê các sản phẩm trong tháng @currentMonth</h6>
+            </div>
+            <div class="card-body" style="line-height:15.5">
+                <div class="chart-bar">
+                    <canvas id="myBarChart" style="display: block; width: 507px !important; height: 490px !important;" ></canvas>
+                </div>
+                <hr>
+                Thống kê các sản phẩm trong tháng
+                <code>@currentMonth</code> 
+            </div>
+        </div>
+    </div>
+    @* Top 5 Product *@
+    <div class="card shadow mb-4">
+        <div class="card-header py-3  " >
+            <h6 class="m-0 font-weight-bold text-primary">TOP 5 Product in @currentYear </h6>
+        </div>
+        <div class="card-body" style="padding: 9.5rem !important;">
+
+            <h4 class="small font-weight-bold" >
+                Server Migration <span class="float-right">20%</span>
+            </h4>
+            <div class="progress mb-4">
+                <div class="progress-bar bg-danger" role="progressbar" style="width: 20%"
+                     aria-valuenow="20" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <h4 class="small font-weight-bold style=" width: 100%"">
+                Sales Tracking <span class="float-right">40%</span>
+            </h4>
+            <div class="progress mb-4">
+                <div class="progress-bar bg-warning" role="progressbar" style="width: 40%"
+                     aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <h4 class="small font-weight-bold style="width: 100%"">
+                Customer Database <span class="float-right">60%</span>
+            </h4>
+            <div class="progress mb-4">
+                <div class="progress-bar" role="progressbar" style="width: 60%"
+                     aria-valuenow="60" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <h4 class="small font-weight-bold style=" width: 100%"">
+                Payout Details <span class="float-right">80%</span>
+            </h4>
+            <div class="progress mb-4">
+                <div class="progress-bar bg-info" role="progressbar" style="width: 80%"
+                     aria-valuenow="80" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+            <h4 class="small font-weight-bold style=" width: 100%"">
+                Account Setup <span class="float-right">Complete!</span>
+            </h4>
+            <div class="progress">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%"
+                     aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+    
+    
+</div>
+<!-- Content Row -->
+@section Scripts {
+    <script src="~/admin/vendor/chart.js/Chart.min.js"></script>
+    <script src="~/admin/js/demo/chart-area-demo.js"></script>
+    <script src="~/admin/js/demo/pie-demo.js"></script>
+    <script src="~/admin/js/demo/chart-bar-demo.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@5.0.0/dist/browser/signalr.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            function fetchHighestRevenue() {
+                $.ajax({
+                    url: '/Admin/Statistics/GetHighestinYear',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('.font-weight-bold.text-gray-800').html('<span>Tháng: ' + response.highestMonth.months + '</span><span style="margin-left:70px;">' + response.highestMonth.total.toFixed(2) + ' VNĐ</span>');
+                            $('.text-xs.font-weight-bold.text-primary.text-uppercase.mb-1').text('Doanh Thu Tháng cao nhất trong năm ');
+                        } else {
+                            console.error('Error:', response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('AJAX Error:', error);
+                    }
+                });
+            }
+
+            function fetchTotalRevenue() {
+                $.ajax({
+                    url: '/Admin/Statistics/GetTotalinMonth',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            var statisticsYear = response.statisticsYear;
+                            statisticsYear.forEach(function (item) {
+                                $('.font-weight-bold.text-gray-900').html('Tháng: ' + item.months + '</span><span style="margin-left:70px;">' + item.total.toFixed(2) + ' VNĐ');
+                                $('.text-xs.font-weight-bold.text-success.text-uppercase.mb-1').text('Doanh thu trong tháng này ');
+                            });
+                        } else {
+                            console.error('Error fetching data: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error calling API: ' + error);
+                    }
+                });
+            }
+
+            function fetchPendingOrders() {
+                $.ajax({
+                    url: '/Admin/Statistics/GetPendingOrder',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            $('.font-weight-bold.text-gray-600').text(response.pending);
+                            $('.text-xs.font-weight-bold.text-warning.text-uppercase.mb-1').text('Số đơn hàng chờ xử lý');
+                        } else {
+                            console.error('Lỗi khi lấy số đơn hàng chờ xử lý: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error calling API: ' + error);
+                    }
+                });
+            }
+
+            function fetchTaskCompletion() {
+                $.ajax({
+                    url: '/Admin/Statistics/getTask',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            var task = response.task;
+                            $('.font-weight-bold.text-gray-700').text(task.toFixed(0) + '%');
+                            $('#my-progress-bar').css('width', task + '%').attr('aria-valuenow', task);
+                        } else {
+                            console.error('Lỗi khi lấy số đơn hàng chờ xử lý: ' + response.message);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error calling API: ' + error);
+                    }
+                });
+            }
+
+            function fetchTop5Products() {
+                $.ajax({
+                    url: "Admin/statistics/getTop5",
+                    type: "GET",
+                    dataType: "json",
+                    success: function (response) {
+                        if (response.success) {
+                            var top5Products = response.top5Products;
+                            $.each(top5Products, function (index, product) {
+                                $('.card-body h4').eq(index).html(product.name + ' <span class="float-right">' + product.percent.toFixed(2) + '%</span>');
+                                $('.card-body .progress-bar').eq(index + 1).css('width', product.percent.toFixed(2) + '%').attr('aria-valuenow', product.percent.toFixed(2));
+                            });
+                        } else {
+                            console.error("Failed to fetch top 5 products");
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Kiểm tra Content-Type của response
+                        var contentType = xhr.getResponseHeader("Content-Type");
+                        if (contentType.indexOf("text/html") !== -1) {
+                            console.error("Error occurred while fetching top 5 products: Received HTML response. Possible server error or incorrect endpoint.");
+                        } else {
+                            console.error("Error occurred while fetching top 5 products:", error);
+                        }
+                    }
+                });
+            }
+
+            function fetchAllData() {
+                fetchHighestRevenue();
+                fetchTotalRevenue();
+                fetchPendingOrders();
+                fetchTaskCompletion();
+                fetchTop5Products();
+            }
+
+            fetchAllData();
+
+            // DataTable Initialization
+            $('#dataTable').DataTable({
+                "ajax": {
+                    "url": "/Admin/Product/getTrend",
+                    "type": "GET",
+                    "dataSrc": "result."
+                },
+                "columns": [
+                    { "data": "name", "width": "40%" },
+                    {
+                        "data": "image",
+                        "render": function (data) {
+                            return '<img src="' + data + '" alt="Product Image" width="100">';
+                        }
+                    },
+                    { "data": "price" }
+                ],
+                "order": [
+                    [0, 'desc']
+                ],
+                "lengthMenu": [5, 10, 25, 50],
+                "language": {
+                    processing: "Message khi đang tải dữ liệu",
+                    search: "Tìm kiếm",
+                    lengthMenu: "Điều chỉnh số mục trên 1 trang _MENU_ ",
+                    info: "Hiển thị _START_ đến _END_ trong  _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu, Hiển thị 0 bản ghi trong _MAX_ tổng cộng 0 ",
+                    infoFiltered: "(Không có sản phẩm trong _MAX_ bản ghi)",
+                    zeroRecords: "Không có dữ liệu theo tìm kiếm",
+                    emptyTable: "Không có dữ liệu",
+                    paginate: {
+                        first: "<<",
+                        previous: "<",
+                        next: ">",
+                        last: ">>"
+                    },
+                    aria: {
+                        sortAscending: ": Message khi đang sắp xếp theo column",
+                        sortDescending: ": Message khi đang sắp xếp theo column",
+                    }
+                },
+                "processing": true,
+                "serverSide": false
+            });
+
+            // SignalR Connection
+            var connection = new signalR.HubConnectionBuilder().withUrl("/notificationHub").build();
+
+            connection.on("OrderHub", function () {
+                showAlertModal('success', "Đã có đơn đặt hàng mới!");
+                fetchAllData();
+                $('#dataTable').DataTable().ajax.reload();
+            });
+
+            function startConnection() {
+                connection.start().then(function () {
+                    console.log("Connection started");
+                }).catch(function (err) {
+                    console.error("Error while starting connection: " + err);
+                    setTimeout(startConnection, 5000);
+                });
+            }
+
+            startConnection();
+
+            connection.onclose(function (error) {
+                console.log("Connection closed: " + error);
+                setTimeout(startConnection, 5000);
+            });
+        });
+    </script>
+}
+
+
+
+
+
+
+
+    

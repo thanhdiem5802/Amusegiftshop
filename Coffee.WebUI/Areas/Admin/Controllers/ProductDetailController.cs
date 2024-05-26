@@ -152,6 +152,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                     _product.DiscountPrice = model.DiscountPrice;
                     await _repositoryProduct.UpdateAsync(_product);
                     return Json(new { success = true, message = "Cập nhật thành công!" });
+
                 }
                 else
                 {

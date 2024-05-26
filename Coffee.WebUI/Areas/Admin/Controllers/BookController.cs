@@ -15,14 +15,23 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
     {
         private readonly IRepository<Book> _bookingRepository;
         private readonly IHubContext<NotificationHub> _hubContext;
-        public BookController(IRepository<Book> bookingRepository, IHubContext<NotificationHub> hubContext)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public BookController(IRepository<Book> bookingRepository, IHubContext<NotificationHub> hubContext, IWebHostEnvironment webHostEnvironment)
         {
             _bookingRepository = bookingRepository;
             _hubContext = hubContext;
+            _webHostEnvironment = webHostEnvironment;
+
         }
         public IActionResult Index()
         {
             return View();
+        }
+        public string GetHtmlTemplate(string templateName)
+        {
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "sendmail", templateName);
+            var htmlBody = System.IO.File.ReadAllText(path);
+            return htmlBody;
         }
         [HttpPost]
         public async Task<IActionResult> Index(int Id)
@@ -37,13 +46,14 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                 else
                 {
                     // Mật khẩu ứng dụng OtpEmail : kemz hkfu jode ctfp
-                    string _message = "Cảm ơn quý khách đã đặt bàn. Vui lòng đến đúng " + Convert.ToString(_book.Time) + " ngày "+ Convert.ToDateTime(_book.Day).ToString("dd/MM/yyyy");
-                    MailMessage message = new MailMessage("txvq0101@gmail.com", _book.Email, "Xác nhận đơn đặt bàn", _message);
+                    string htmlBody = GetHtmlTemplate("confirm.html");
+                    MailMessage message = new MailMessage("amusestuff001@gmail.com", _book.Email, "Xác nhận đơn đặt hàng", htmlBody);
+                    message.IsBodyHtml = true;
                     SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
                     client.EnableSsl = true;
                     client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.UseDefaultCredentials = false;
-                    client.Credentials = new System.Net.NetworkCredential("txvq0101@gmail.com", "kemz hkfu jode ctfp");
+                    client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "webb dong hdwk seil");
                     client.Send(message);
 
                     _book.Status = true;

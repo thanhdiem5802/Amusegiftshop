@@ -11,6 +11,7 @@ namespace Coffee.WebUI.Service
             CreateMap<Product, ProductModel>();
             CreateMap<Category, CategoryModel>();
             CreateMap<New, NewModel>();
+            CreateMap<Review, ReviewModel>();
             CreateMap<User, AccountUserModel>();
             CreateMap<ProductImage, ProductImageModel>()
                 .ForMember(dest => dest.Image, opt => opt.MapFrom(src => src.UrlImage));

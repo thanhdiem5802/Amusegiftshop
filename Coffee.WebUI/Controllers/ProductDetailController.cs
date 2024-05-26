@@ -76,7 +76,7 @@ namespace Coffee.WebUI.Controllers
                 ProductImages = productImages
             };
             var _reletadProduct = await _productRepository.GetAllAsync();
-            _reletadProduct = _reletadProduct.Where(x => x.CategoryId == _productDetail.CategoryId);
+            _reletadProduct = _reletadProduct.Where(x => x.CategoryId == _productDetail?.CategoryId);
             // Tạo một instance của lớp Random
             Random random = new Random();
 
@@ -84,8 +84,26 @@ namespace Coffee.WebUI.Controllers
             _reletadProduct = _reletadProduct.OrderBy(x => random.Next());
             ViewBag.ReletadProduct = _reletadProduct.Take(4).ToList();
             var _review = await _reviewRepository.GetAllAsync();
-            var listReview = _mapper.Map<List<ReviewModel>>(_review.Where(x => x.ProductId == id));
-            var _user = await _userRepository.GetAllAsync();
+            if (_review == null)
+            {
+                return StatusCode(404, "No reviews found.");
+            }
+
+            // Bây giờ lọc review dựa trên ProductId và xử lý trường hợp mà 'Reply' mà null
+            var filteredReviews = _review
+                .Where(r => r.ProductId == id)
+                .Select(r => {
+                    // Đưa ra giá trị mặc định nếu 'Reply' là null
+                    r.Reply = r.Reply ?? "No reply from admin yet.";
+                    return r;
+                })
+                .ToList();
+
+            // Ánh xạ từ đối tượng Review sang ReviewModel
+            var listReview = _mapper.Map<List<ReviewModel>>(filteredReviews);
+
+            // Lấy thông tin người dùng - chỉ làm điều này nếu cần thông tin người dùng trong chức năng của bạn
+            var _user = await _userRepository.GetAllAsync(); // Lưu ý: Đoạn code này vẫn không hiệu quả nếu bạn không cần thông tin user cho mỗi review.
 
             if (listReview.Count() > 0)
             {
@@ -156,6 +174,7 @@ namespace Coffee.WebUI.Controllers
                     ProductId = Id,
                     CreatedOn = DateTime.Now,
                     Status = true,
+                    
                 };
                 await _reviewRepository.InsertAsync(review);
                 return Json(new

@@ -63,13 +63,12 @@
 }
 <main>
     <!-- breadcrumb area start -->
-    <section class="breadcrumb-area pt-140 pb-140 bg_img" data-overlay="dark" data-opacity="5" data-background="../assets/images/bg/testimonial-bg-2.jpg">
-        <div class="shape shape__1"><img src="~/assets/images/shape/breadcrumb-shape-1.png" alt=""></div>
-        <div class="shape shape__2"><img src="~/assets/images/shape/breadcrumb-shape-2.png" alt=""></div>
+    <section class="breadcrumb-area pt-140 pb-140 bg_img" data-overlay="dark" data-opacity="5" data-background="../assets/images/bg/amuse.jpg">
+        
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 text-center">
-                    <h2 class="page-title">Cữa hàng Cafena</h2>
+                    <h2 class="page-title">Amuse Gift</h2>
                     <div class="cafena-breadcrumb breadcrumbs">
                         <ul class="list-unstyled d-flex align-items-center justify-content-center">
                             <li class="cafenabcrumb-item duxinbcrumb-begin">
@@ -166,9 +165,9 @@
     }
     <!-- product popup end -->
     <!-- blog area start -->
-    <div class="blog-area pt-120 pb-105">
+    <div class="blog-area pt-120 pb-105" style="background:#fff">
         <div class="container">
-            <div class="row">
+            <div class="row" >
                 <div class="col-xl-12">
                     <div class="shop-filter-wrapper d-flex justify-content-between align-items-center mb-30">
                         <div class="sf-left">
@@ -213,7 +212,7 @@
                                                     <div class="pp__action pp__action--2 d-flex align-items-center justify-content-center">
                                                         @if (Convert.ToInt32(item.Quantity) > 0)
                                                         {
-                                                            <div class="cart d-flex align-items-center justify-content-center">
+                                                            <div class="cart d-flex align-items-center justify-content-center" style="border-color:#ffc107">
                                                                 <a href="javascript:void(0)" onclick="addCart('@item.ProductId',1)"><i class="fal fa-shopping-basket"></i></a>
                                                             </div>
                                                         }

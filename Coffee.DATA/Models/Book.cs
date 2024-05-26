@@ -13,7 +13,9 @@ namespace Coffee.DATA.Models
         public string Phone { get; set; }
         public string Seates { get; set; }
         public string Email { get; set; }
+        public string PaymentMethod { get; set; }
+        public string Noted { get; set; }
         public DateTime Day { get; set; }
-        public TimeSpan Time { get; set; }
+        
     }
 }

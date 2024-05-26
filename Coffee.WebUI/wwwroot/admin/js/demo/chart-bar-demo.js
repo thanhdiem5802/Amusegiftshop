@@ -1,4 +1,4 @@
-// Set new default font family and font color to mimic Bootstrap's default styling
+﻿// Set new default font family and font color to mimic Bootstrap's default styling
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
 
@@ -27,8 +27,53 @@ function number_format(number, decimals, dec_point, thousands_sep) {
     return s.join(dec);
 }
 
+$(document).ready(function () {
+    $.ajax({
+        url: '/Admin/Statistics/Productsold',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                // Lấy dữ liệu từ phản hồi AJAX
+                var data = response.productsold;
+                var total = response.totalRevenue;
+                var max = response.maxprice;
+                // Tạo mảng màu sắc ngẫu nhiên cho mỗi sản phẩm
+                var colors = data.map(function () {
+                    // Hàm để tạo màu ngẫu nhiên
+                    return 'rgba(' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ',' + Math.floor(Math.random() * 256) + ',0.7)';
+                });
+                // Tạo mảng nhãn và mảng dữ liệu từ dữ liệu nhận được
+                var labels = data.map(function (item) {
+                    return item.name;
+                });
+                var prices = data.map(function (item) {
+                    return item.totalPrice;
+                });
+                console.log("total là " + total)
+                // Cập nhật dữ liệu cho biểu đồ
+                myBarChart.data.labels = labels;
+                myBarChart.data.datasets[0].data = prices;
+                myBarChart.options.scales.yAxes[0].ticks.max = max;
+                myBarChart.data.datasets[0].backgroundColor = colors; // Thiết lập màu nền
+                myBarChart.data.datasets[0].hoverBackgroundColor = colors; // Thiết lập màu khi hover
+
+                // Cập nhật biểu đồ
+                myBarChart.update();
+            } else {
+                console.error('Lỗi khi lấy dữ liệu: ' + response.error);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Lỗi khi gọi API: ' + error);
+        }
+    });
+});
+
+
 // Bar Chart Example
 var ctx = document.getElementById("myBarChart");
+
 var myBarChart = new Chart(ctx, {
     type: 'bar',
     data: {
@@ -46,8 +91,8 @@ var myBarChart = new Chart(ctx, {
         layout: {
             padding: {
                 left: 10,
-                right: 25,
-                top: 25,
+                right: 10,
+                top: 0,
                 bottom: 0
             }
         },
@@ -63,17 +108,17 @@ var myBarChart = new Chart(ctx, {
                 ticks: {
                     maxTicksLimit: 6
                 },
-                maxBarThickness: 25,
+                maxBarThickness: 30,
             }],
             yAxes: [{
                 ticks: {
                     min: 0,
                     max: 15000,
-                    maxTicksLimit: 5,
-                    padding: 10,
+                    maxTicksLimit: 10,
+                    padding: 0,
                     // Include a dollar sign in the ticks
                     callback: function (value, index, values) {
-                        return '$' + number_format(value);
+                        return number_format(value) + 'VNĐ';
                     }
                 },
                 gridLines: {
@@ -91,11 +136,11 @@ var myBarChart = new Chart(ctx, {
         tooltips: {
             titleMarginBottom: 10,
             titleFontColor: '#6e707e',
-            titleFontSize: 14,
+            titleFontSize: 20,
             backgroundColor: "rgb(255,255,255)",
             bodyFontColor: "#858796",
             borderColor: '#dddfeb',
-            borderWidth: 1,
+            borderWidth: 1, 
             xPadding: 15,
             yPadding: 15,
             displayColors: false,

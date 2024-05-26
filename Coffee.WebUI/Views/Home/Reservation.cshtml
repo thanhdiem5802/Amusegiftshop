@@ -1,24 +1,35 @@
 ﻿@{
-    ViewData["Title"] = "Đặt Bàn";
+    ViewData["Title"] = "Đặt Hàng";
     // Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<style>
+    .noted-label {
+        font-size: 22px;
+        color: green;
+        font-style: italic;
+        margin-bottom: 5px;
+    }
+
+    .form-control {
+        /* Các thiết lập CSS hiện tại của class "form-control" */
+    }
+</style>
 @model Coffee.DATA.Models.Book
 <main>
     <!-- breadcrumb area start -->
-    <section class="breadcrumb-area pt-140 pb-140 bg_img" data-overlay="dark" data-opacity="5" data-background="../assets/images/bg/testimonial-bg-2.jpg">
-        <div class="shape shape__1"><img src="~/assets/images/shape/breadcrumb-shape-1.png" alt=""></div>
-        <div class="shape shape__2"><img src="~/assets/images/shape/breadcrumb-shape-2.png" alt=""></div>
+    <section class="breadcrumb-area pt-140 pb-140 bg_img" data-overlay="white" data-opacity="5" data-background="../assets/images/bg/amuse.jpg">
+       
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 text-center">
-                    <h2 class="page-title">Đặt bàn tại Cafena</h2>
+                    <h2 class="page-title">Đặt Hàng Tại Đây</h2>
                     <div class="cafena-breadcrumb breadcrumbs">
                         <ul class="list-unstyled d-flex align-items-center justify-content-center">
                             <li class="cafenabcrumb-item duxinbcrumb-begin">
                                 <a asp-controller="Home" asp-action="Index"><span>Trang chủ</span></a>
                             </li>
                             <li class="cafenabcrumb-item duxinbcrumb-end">
-                                <span>Đặt bàn</span>
+                                <span>Đặt Hàng</span>
                             </li>
                         </ul>
                     </div>
@@ -28,15 +39,13 @@
     </section>
     <!-- breadcrumb area end -->
     <!-- reservation area start -->
-    <section class="reservation__area reservation__area--2 position-relative pt-120 pb-120">
-        <span class="shape shape__1 position-absolute"><img src="~/assets/images/shape/hero-shape-2-1.png" alt=""></span>
-        <span class="shape shape__2 position-absolute"><img src="~/assets/images/shape/hero-shape-2-2.png" alt=""></span>
+    <section class="reservation__area reservation__area--2 position-relative pt-120 pb-120" style="padding-bottom:60px">
         <div class="container">
             <div class="row">
                 <div class="col-xl-12">
                     <div class="reservation__wrapper reservation__wrapper--2">
                         <div class="section-heading section-heading__black text-center mb-35">
-                            <h2 class="title">Đặt bàn</h2>
+                            <h2 class="title">Đặt Hàng</h2>
                         </div>
                         @if (ViewBag.Success != null)
                         {
@@ -61,13 +70,10 @@
                                         </div>
                                     </div>
                                     <div class="col-xl-6 col-lg-6">
-                                        <div class="from-group mt-30">
-                                            <select asp-for="Seates" id="subject">
-                                                <option value="2">Cho 2 người</option>
-                                                <option value="3">Cho 3 người</option>
-                                                <option value="4">Cho 4 người</option>
-                                                <option value="5">Cho 5 người</option>
-                                            </select>
+                                        <div class="form-group mt-30">
+                                            <input asp-for="Seates" id="seatesInput" class="form-control" placeholder="Số lượng sản phẩm">
+                                            <span asp-validation-for="Seates" class="text-danger"></span>
+                                            <p id="seatesErrorMessage" class="text-danger" style="display: none;">chỉ nhận đặt hàng khi sản phẩm bạn cần hết hàng hoặc trên 3 sản phẩm</p>
                                         </div>
                                     </div>
                                     <div class="col-xl-6 col-lg-6">
@@ -78,8 +84,14 @@
                                     </div>
                                     <div class="col-xl-6 col-lg-6">
                                         <div class="from-group mt-30">
-                                            <input asp-for="Time" type="time" min="07:00" max="22:00" class="form-control" placeholder="Giờ">
-                                            <span asp-validation-for="Time" class="text-danger"></span>
+                                            <select asp-for="PaymentMethod" class="form-control" required>
+                                                <option value="">Hình thức thanh toán</option>
+                                                <option value="Thanh toán bằng tiền mặt">Thanh toán bằng tiền mặt</option>
+                                                <option value="Thanh toán bằng thẻ">Thanh toán bằng thẻ</option>
+
+                                            </select>
+                                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
+                                            <span asp-validation-for="PaymentMethod" class="text-danger"></span>
                                         </div>
                                     </div>
                                     <div class="col-xl-6 mt-30">
@@ -89,8 +101,18 @@
                                             <span class="text-danger" id="checkEmailFalse" style="display: none">Email False</span>
                                         </div>
                                     </div>
+                                    <div>
+                                        <div class="from-group mt-30">
+                                            <label for="Noted" class="noted-label">NOTE</label>
+                                            <input asp-for="Noted" class="form-control" placeholder="Bạn vui lòng điền rõ yêu cầu và sản phẩm để nhân viên bên mình có thể liên hệ lại" title="NOTE">
+                                            <span asp-validation-for="Noted" class="text-danger"></span>
+                                        </div>
+                                    </div>
                                     <div class="col-xl-12 mt-20 text-center">
-                                        <button type="submit" id="submitBtn" class="site-btn">Đặt bàn</button>
+                                        <button type="submit" id="submitBtn" class="site-btn">Đặt Hàng</button>
+                                    </div>
+                                    <div class="col-xl-12 mt-20" style="position: relative; background-color:#dc3545">
+                                        <button type="button" class="site-btn" onclick="window.location.href = '/'" style="position: absolute; bottom: 10px; right: 10px;  text-align: center; /* Added styles for responsiveness */">Trang Chủ</button>
                                     </div>
                                 </div>
                             </form>

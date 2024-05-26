@@ -40,6 +40,13 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
             var result = _mapper.Map<List<ProductModel>>(products);
             return Json(new { success = true, result });
         }
+        public async Task<IActionResult> getTrend()
+        {
+            var products = await _repository.GetAllAsync();
+            products = products.Where(x => x.Status != null && x.Keywords=="TREND").ToList();
+            var result = _mapper.Map<List<ProductModel>>(products);
+            return Json(new { success = true, result });
+        }
         [HttpPost]
         public async Task<IActionResult> CreateProduct(ProductModel models, IFormFile mainImage, IFormFileCollection additionalImages)
         {

@@ -27,8 +27,9 @@ namespace Coffee.WebUI.Controllers
         private readonly IRepository<User> _userRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<OrderDetail> _orderDetailRepository;
+        private readonly IRepository<Product> _ProductRepository;
 
-        public VnPayController(IRepository<User> userRepository, IRepository<Order> orderRepository, IRepository<OrderDetail> orderDetailRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, DbCoffeeDbContext db, IHubContext<NotificationHub> hubContext)
+        public VnPayController(IRepository<User> userRepository, IRepository<Order> orderRepository,IRepository<Product> productRepository, IRepository<OrderDetail> orderDetailRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, DbCoffeeDbContext db, IHubContext<NotificationHub> hubContext)
         {
             _userRepository = userRepository;
             _orderRepository = orderRepository;
@@ -37,6 +38,7 @@ namespace Coffee.WebUI.Controllers
             _httpContextAccessor = httpContextAccessor;
             _db = db;
             _hubContext = hubContext;
+            _ProductRepository = productRepository; 
         }
 
         public async Task<IActionResult> Index(string Province, string District, string Town, string Address)
@@ -114,16 +116,20 @@ namespace Coffee.WebUI.Controllers
                         Address = HttpContext.Session.GetString("Address")
                     };
                     var _orederId = await _orderRepository.InsertAsync(_order);
+                    
                     foreach (var item in CartModels)
                     {
                         var _orderDetail = new OrderDetail
                         {
                             OrderId = _orederId.Id,
                             ProductId = item.ProductModel.ProductId,
-                            Price = item.ProductModel.Price,
+                            Price = item.ProductModel.Price * item.Quantity,
                             Quanlity = item.Quantity,
                         };
+                       
+                            
                         await _orderDetailRepository.InsertAsync(_orderDetail);
+                        
                     }
                     ViewBag.ResponseCode = "00";
                     HttpContext.Session.Remove("Province");
@@ -183,15 +189,45 @@ namespace Coffee.WebUI.Controllers
             var _orederId = await _orderRepository.InsertAsync(_order);
             foreach (var item in CartModels)
             {
+                // Calculate the total price for the order detail
+                var totalPrice = item.ProductModel.Price * item.Quantity;
+
+                // Create the order detail object
                 var _orderDetail = new OrderDetail
                 {
                     OrderId = _orederId.Id,
                     ProductId = item.ProductModel.ProductId,
-                    Price = item.ProductModel.Price,
+                    Price = totalPrice,
                     Quanlity = item.Quantity,
                 };
+
+                // Update the quantity of the product
+                var product = await _ProductRepository.GetByIdAsync(item.ProductModel.ProductId);
+                if (product != null)
+                {
+                    if (int.TryParse(product.Quantity, out int availableQuantity))
+                    {
+                        // Subtract the quantity of items in the cart from the available quantity of products
+                        int updatedQuantity = availableQuantity - item.Quantity;
+                        product.Quantity = updatedQuantity.ToString(); // Convert back to string
+                        await _ProductRepository.UpdateAsync(product);
+                    }
+                    else
+                    {
+                       
+                        continue; // Skip processing this item and move to the next one
+                    }
+                }
+                else
+                {
+                   
+                    continue; // Skip processing this item and move to the next one
+                }
+
+                // Insert the order detail into the database
                 await _orderDetailRepository.InsertAsync(_orderDetail);
             }
+
             HttpContext.Session.Remove("Cart");
             await _hubContext.Clients.All.SendAsync("OrderHub");
             return RedirectToAction("Index", "HistoryOrder");

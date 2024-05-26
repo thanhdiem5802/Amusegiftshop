@@ -15,10 +15,12 @@
             <label class="form-label">Họ và tên</label>
             <input class="form-control" asp-for="Name" placeholder="Nhập họ và tên" />
             <input type="type" name="Id" class="d-none" value="@Model.Id" />
+            <div class="invalid-feedback" id="nameError"></div>
         </div>
         <div class="col-xs-12 col-sm-6">
             <label class="form-label">Số điện thoại</label>
             <input class="form-control" asp-for="Phone" placeholder="Nhập số điện thoại" />
+            <div class="invalid-feedback" id="phoneError"></div>
         </div>
         <div class="col-xs-12 col-sm-6 ">
             <label class="form-label">Email</label>
@@ -48,6 +50,7 @@
         <div class="col-xs-12 col-sm-6 ">
             <label class="form-label">Địa chỉ/ Số nhà</label>
             <input class="form-control" asp-for="Address" placeholder="Nhập địa chỉ/ số nhà" />
+            <div class="invalid-feedback" id="addressError"></div>
         </div>
     </div>
     <div class="m-auto mt-3">
@@ -145,6 +148,7 @@
             // console.log(prodvince)
         })
     </script>
+    
     <script>
         $(document).ready(function () {
             $('button.site-btn').click(function (e) {
@@ -158,6 +162,18 @@
                 var district = $('#district').val().trim();
                 var town = $('#town').val().trim();
                 var address = $('input[name=Address]').val().trim();
+                // Biểu thức chính quy cho tên: chỉ chứa các kí tự chữ và khoảng trắng
+                const namePattern = /^[^<>;{}]*$/;
+        // Biểu thức chính quy cho số điện thoại: chỉ chứa các kí tự số và có độ dài từ 10 đến 15 ký tự
+                 const phonePattern = /^\d{10,15}$/;
+        // Biểu thức chính quy cho địa chỉ: chỉ chứa các kí tự chữ, số và khoảng trắng
+                 const addressPattern = /^[^<>;{}]*$/;
+
+        // Kiểm tra các giá trị theo mẫu
+                if (!namePattern.test(name) || !phonePattern.test(phone) || !addressPattern.test(address)) {
+                     alert("Phát hiện các kí tự không giống định dạng");
+                     return;
+                    }    
 
                 if (name === '' || phone === '' || province === '' || district === '' || town === '' || address === '') {
                     alert("Vui lòng điền đầy đủ thông tin");
@@ -190,6 +206,5 @@
             });
         });
     </script>
-
 }
 

@@ -39,8 +39,8 @@ namespace Coffee.WebUI
                 })
                 .AddGoogle(googleOptions =>
                 {
-                    googleOptions.ClientId = "42557447431-n5q58cmqp5baqubhi07qshub2m03veoj.apps.googleusercontent.com";
-                    googleOptions.ClientSecret = "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";
+                    googleOptions.ClientId = "165606253768-hl6k68l336q6hka5cq8i2rkg9pb746sf.apps.googleusercontent.com";
+                    googleOptions.ClientSecret = "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";
                 });
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddHttpContextAccessor();
@@ -119,7 +119,7 @@ namespace Coffee.WebUI
                     defaults: new { controller = "Product", action = "Index" });
                 endpoints.MapControllerRoute(
                     name: "reservation",
-                    pattern: "dat-ban",
+                    pattern: "dat-hang",
                     defaults: new { controller = "Reservation", action = "Index" });
                 endpoints.MapControllerRoute(
                     name: "introduce",
@@ -127,7 +127,7 @@ namespace Coffee.WebUI
                     defaults: new { controller = "Home", action = "Introduce" });
                 endpoints.MapControllerRoute(
                     name: "reservation",
-                    pattern: "dat-ban",
+                    pattern: "dat-hang",
                     defaults: new { controller = "Home", action = "Reservation" });
                 endpoints.MapControllerRoute(
                     name: "contact",

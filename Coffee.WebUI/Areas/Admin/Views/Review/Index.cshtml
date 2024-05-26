@@ -1,0 +1,153 @@
+﻿@{
+    ViewData["Title"] = "Review";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<h1>Các Comment của User</h1>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <a href="javascript:void(0)" data-toggle="modal" data-target="#inputModal" class="m-0 font-weight-bold text-primary">Thêm danh mục mới</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-bordered" style="width:100%; min-width: 1000px;" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Tên Người gửi</th>
+                        <th>Tên sản phẩm</th>
+                        <th>Rate</th>
+                        <th>Comment</th>
+                        <th>Admin Reply</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="logoutModalUpdate" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Admin Reply</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body p-3">
+                <input type="hidden" id="categoryId" />
+                <label>Reply</label>
+                <input type="text" name="reply" class="form form-control" id="txtModalReply" value="" placeholder="Nhập phản hồi" />
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="btnSave">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "ajax": {
+                    "url": "/Admin/Review/GetReview",
+                    "type": "GET",
+                    "dataSrc": "result"
+                    
+
+                },
+               
+                "columns": [
+                    { "data": "userName" },  // Cột tên người gửi
+                    { "data": "productName" },  // Cột tên sản phẩm
+                    { "data": "rating" },  // Cột rate
+                    { "data": "contentReview" },  // Cột commentbbbb
+                    {
+                        "data": "reply",
+                        "render": function (data, type, row) {
+                            return data ? data : 'chưa reply';
+                        }
+                    },  // Cột admin reply
+                    {
+                        "data": null,
+                        "render": function (data, type, row) {
+                            return '<button data-id="' + row.id + '" class="btn btn-primary btn-reply">Reply</button>';
+                        }
+                    }
+
+
+
+
+                ],
+                "language": {
+                    processing: "Đang xử lý...",
+                    search: "Tìm kiếm",
+                    lengthMenu: "Hiển thị _MENU_ mục",
+                    info: "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu",
+                    infoFiltered: "(lọc từ _MAX_ mục)",
+                    loadingRecords: "Đang tải...",
+                    zeroRecords: "Không tìm thấy dữ liệu phù hợp",
+                    emptyTable: "Không có dữ liệu",
+                    paginate: {
+                        first: "<<",
+                        previous: "<",
+                        next: ">",
+                        last: ">>"
+                    },
+                    aria: {
+                        sortAscending: ": Sắp xếp tăng dần",
+                        sortDescending: ": Sắp xếp giảm dần"
+                    }
+                }
+            });
+        });
+    </script>
+    <script>
+
+        // Bắt đầu snippet jQuery
+        $(document).on('click', '.btn-reply', function () {
+            // Lấy ID và mở modal
+            var id = $(this).data('id');
+            $('#categoryId').val(id);
+            $('#logoutModalUpdate').modal('show');
+        });
+
+        $('#btnSave').on('click', function () {
+            // Lấy ID và nội dung reply từ các trường nhập liệu trong modal
+            var id = $('#categoryId').val();
+            var reply = $('#txtModalReply').val();
+
+            // Tiến hành lưu admin reply bằng ajax
+            $.ajax({
+                url: '/Admin/Review/AdminReply', // Đường dẫn đến phương thức trong controller
+                type: 'POST', // Phương thức HTTP, cùng với controller
+                dataType: 'json',
+                data: {
+                    id: id,    // Tham số ID của review
+                    reply: reply  // Tham số reply nhập vào từ admin
+                },
+                success: function (response) {
+                    // Kiểm tra phản hồi từ server
+                    if (response.success) {
+                        alert('Reply thành công');
+                        $('#logoutModalUpdate').modal('hide');
+                        $('#dataTable').DataTable().ajax.reload();
+                        // Có thể reload DataTable tại đây hoặc cập nhật thông tin cụ thể của row bị ảnh hưởng
+                    } else {
+                        // Hiện thông báo lỗi nhận được từ server
+                        alert('Lỗi: ' + response.message);
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Sự cố với request, thông báo lỗi cho người dùng
+                    alert('Có lỗi xảy ra: ' + error);
+                }
+            });
+        });
+        // Kết thúc snippet jQuery
+
+
+
+    </script>
+}

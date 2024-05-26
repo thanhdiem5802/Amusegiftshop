@@ -7877,7 +7877,7 @@ button.bg-dark:focus {
 
 .pb-3,
 .py-3 {
-  padding-bottom: 1rem !important;
+  padding-bottom: 1rem ;
 }
 
 .pl-3,
@@ -10016,17 +10016,25 @@ a:focus {
 }
 
 .text-gray-600 {
-  color: #858796 !important;
+    color: #5a5c69 !important;
 }
 
 .text-gray-700 {
-  color: #6e707e !important;
+    color: #5a5c69 !important;
 }
 
 .text-gray-800 {
   color: #5a5c69 !important;
 }
-
+.text-gray-801 {
+    color: #5a5c69 !important;
+}
+.text-gray-802 {
+    color: #5a5c69 !important;
+}
+.text-gray-803 {
+    color: #5a5c69 !important;
+}
 .text-gray-900 {
   color: #3a3b45 !important;
 }

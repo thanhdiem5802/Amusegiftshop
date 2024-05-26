@@ -3,9 +3,9 @@
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
 
-<div class="card shadow mb-4">
+<div class="card shadow mb-4" id="myModalUpdate">
     <div class="card-header py-3 d-flex align-items-center">
-        <p href="javascript:void(0)" class="m-0 font-weight-bold text-primary">Tài khoảng khách hàng</p>
+        <p href="javascript:void(0)" class="m-0 font-weight-bold text-primary">Tài khoản khách hàng</p>
     </div>
     <div class="card-body">
         <div class="table-responsive">
@@ -17,6 +17,9 @@
                         <th>Số điện thoại</th>
                         <th>#</th>
                     </tr>
+                <tbody id="Review">
+                    <!-- Order details will be dynamically inserted here -->
+                </tbody>
                 </thead>
             </table>
         </div>
@@ -50,6 +53,7 @@
                 },
             });
         });
+
         // Hàm tải lại dữ liệu AJAX
         function loadData() {
             $.ajax({
@@ -70,6 +74,7 @@
                                 item.email,
                                 item.phone ?? 'Không',
                                 '<a href="javascript:void(0)" class="m-0 font-weight-bold text-primary" onclick=toggleAccount(' + item.id + ')>' + Status + '</a>'
+                                        // '<a href="javascript:void(0)" class="m-0 font-weight-bold text-primary" onclick="Detail(' + item.id + ')">Chi tiết</a>'
                             ]).draw(false);
                         });
                     } else {
@@ -85,6 +90,7 @@
             // Gọi hàm tải lại dữ liệu khi trang được tải
             loadData();
         });
+
         function toggleAccount(Id) {
             $.ajax({
                 type: 'post',
@@ -102,5 +108,40 @@
                 }
             });
         }
+        // function Detail(Id) {
+        //     var formData = new FormData();
+        //     formData.append('Id', Id);
+        //     $.ajax({
+        //         url: '/Admin/Account/Review',
+        //         type: 'POST',
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         success: function (response) {
+        //             if (response.success) {
+        //                 $('#dataTable').text(Id); // Set the order ID in the modal
+        //                 var Review = response.result;
+        //                 var tbody = $('#Review');
+        //                 tbody.empty(); // Clear any existing rows
+        //                 $.each(Review, function (index, detail) {
+        //                     var row = '<tr>' +
+        //                         '<td>' + Review.Id + '</td>' +
+        //                         '<td>' + Review.CreatedOn + '</td>' +
+        //                         '<td>' + Review.ContentReview + '</td>' +
+        //                         '<td>' + Review.Rating + '</td>' +
+        //                         '<td>' + Review.ProductId + '</td>' +
+        //                         '</tr>';
+        //                     tbody.append(row); // Append new row to tbody
+        //                 });
+        //                 $('#myModalUpdate').modal('show');
+        //             } else {
+        //                 showAlertModal('danger', response.error);
+        //             }
+        //         },
+        //         error: function () {
+        //             showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
+        //         }
+        //     });
+        // }
     </script>
 }

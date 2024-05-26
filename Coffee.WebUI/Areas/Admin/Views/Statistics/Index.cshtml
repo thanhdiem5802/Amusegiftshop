@@ -1,7 +1,45 @@
 ﻿@{
-    ViewData["Title"] = "Thông kê doanh thu";
+    ViewData["Title"] = "Thống kê doanh thu";
     Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
 }
+@section Styles {
+    <style>
+        /* CSS cho cột Trending */
+        #dataTable th[colspan="3"] {
+            text-align: center; /* Canh giữa nội dung trong cột Trending */
+            background-color: #f2f2f2; /* Màu nền của cột Trending */
+            color: #333; /* Màu chữ của cột Trending */
+        }
+        /* CSS cho tên sản phẩm */
+        #dataTable tbody tr td:nth-child(1) {
+            font-size: 16px; /* Kích thước chữ của tên sản phẩm */
+        }
+
+        /* CSS cho hình ảnh */
+        #dataTable tbody tr td:nth-child(2) img {
+            max-width: 100px; /* Độ rộng tối đa của hình ảnh */
+            max-height: 100px; /* Độ cao tối đa của hình ảnh */
+        }
+
+        /* CSS cho giá */
+        #dataTable tbody tr td:nth-child(3) {
+            font-size: 16px; /* Kích thước chữ của giá */
+            .custom-container
+        }
+        {
+            max-width: 800px; /* Độ rộng tối đa của container */
+            margin: 0 auto; /* Căn giữa container */
+        }
+
+        /* CSS cho thẻ div card-body */
+        .custom-card-body {
+            padding: 15px; /* Khoảng cách giữa nội dung và viền của card-body */
+        }
+        
+    </style>
+}
+
+@model ProductModel
 @{
     // Lấy năm hiện tại
     var currentYear = DateTime.Now.Year;
@@ -25,7 +63,101 @@
         </div>
     </div>
 </div>
-@section Scripts {
+
+<div class="card shadow mb-4">
+    <div class="card-header" style="padding-top: 2rem; padding-bottom: 2rem;">
+        <a href="javascript:void(0)" data-toggle="modal" data-target="#inputModal" class="m-0 font-weight-bold text-primary">Thêm danh mục mới</a>
+    </div>
+    <div class="card-body">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="table-responsive-sm">
+                        <table id="dataTable" class="table table-bordered" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th colspan="3">TRENDING</th> <!-- Cột Trending chiếm toàn bộ 3 cột -->
+                                </tr>
+                                <tr>
+                                    <th>Tên</th>
+                                    <th>Hình ảnh</th>
+                                    <th>Giá</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Thông tin sản phẩm sẽ được điền vào đây -->
+                                <!-- Sử dụng Ajax để điền thông tin sản phẩm -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+       @section Scripts {
     <script src="~/admin/vendor/chart.js/Chart.min.js"></script>
     <script src="~/admin/js/demo/chart-area-demo.js"></script>
+    <script src="~/admin/js/demo/product.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "ajax": {
+                    "url": "/Admin/Product/GetAllProduct",
+                    "type": "GET",
+                    "dataSrc": "result."
+                },
+                "columns": [
+                   
+                    { "data": "name", "width": "40%" },
+                    {
+                        "data": "image",
+                        "render": function (data, type, row) {
+                            return '<img src="' + data + '" alt="Product Image" width="100">';
+                        }
+                    },
+                    { "data": "price" },
+                    
+                    
+                ],
+                "order": [
+                    [0, 'desc'] // Sắp xếp cột đầu tiên (cột ID) theo thứ tự giảm dần
+                ],
+                "lengthMenu": [5, 10, 25, 50],
+                "language": {
+                    processing: "Message khi đang tải dữ liệu",
+                    search: "Tìm kiếm",
+                    lengthMenu: "Điều chỉnh số mục trên 1 trang _MENU_ ",
+                    info: "Hiển thị _START_ đến _END_ trong  _TOTAL_ mục",
+                    infoEmpty: "Không có dữ liệu, Hiển thị 0 bản ghi trong _MAX_ tổng cộng 0 ",
+                    infoFiltered: "(Không có sản phẩm trong _MAX_ bản ghi)",
+                    loadingRecords: "",
+                    zeroRecords: "Không có dữ liệu theo tìm kiếm",
+                    emptyTable: "Không có dữ liệu",
+                    paginate: {
+                        first: "<<",
+                        previous: "<",
+                        next: ">",
+                        last: ">>"
+                    },
+                    aria: {
+                        sortAscending: ": Message khi đang sắp xếp theo column",
+                        sortDescending: ": Message khi đang sắp xếp theo column",
+                    }
+                },
+                "processing": true,
+                "serverSide": false,
+            });
+        });
+    </script>
+    
 }
+
+
+
+

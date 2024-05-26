@@ -31,8 +31,12 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
             try
             {
                 var _order = await _orderRepository.GetByIdAsync(Id);
+                var _orderdetail =  _orderDetailRepository.GetAllAsync;
+
                 _order.OrderStatus = true;
                 _order.Status = true;
+                //_orderdetail.Status = true;
+                //_orderdetail.CreatedOn = DateTime.Now;
                 await _orderRepository.UpdateAsync(_order);
                 return Json(new { success = true, message = "Xác nhận giao thành công!" });
             }

@@ -1,6 +1,34 @@
-// Set new default font family and font color to mimic Bootstrap's default styling
+﻿// Set new default font family and font color to mimic Bootstrap's default styling
 Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#858796';
+var listDataYear = [];
+$(document).ready(function () {
+    $.ajax({
+        url: '/Admin/Statistics/GetStatisticsYear',
+        type: 'GET',
+        dataType: 'json',
+        success: function (response) {
+            if (response.success) {
+                var statisticsYear = response.statisticsYear;
+                statisticsYear.forEach(function (item) {
+                    var month = item.months;
+                    var total = item.total;
+                    listDataYear[month - 1] = total;
+                });
+                console.log(listDataYear);
+
+                // Update the chart after fetching data
+                myLineChart.data.datasets[0].data = listDataYear;
+                myLineChart.update();
+            } else {
+                console.error('Lỗi khi lấy dữ liệu: ' + response.message);
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error('Lỗi khi gọi API: ' + error);
+        }
+    });
+});
 
 // Pie Chart Example
 var ctx = document.getElementById("myPieChart");

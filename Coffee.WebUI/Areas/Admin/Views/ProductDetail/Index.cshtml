@@ -291,6 +291,7 @@
             });
         }
     </script>
+    
     <script>
         $(document).ready(function () {
             // Gán sự kiện cho nút "Lưu"
@@ -341,7 +342,7 @@
                     showAlertModal('danger', 'Giá sản phẩm không được âm.');
                     return;
                 }
-                return;
+                
                 var url_string = window.location.href;
                 var url = new URL(url_string);
                 var _id = url.searchParams.get("id");
@@ -366,6 +367,11 @@
                             showAlertModal('success', response.message);
                             loaddata();
                             hideLoading();
+                            // Chuyển hướng sau 3 giây
+                            setTimeout(function () {
+                                window.location.href = '/Admin/Product'; // Chuyển hướng đến trang sản phẩm trong khu vực Admin
+                            }, 2000); // 3000 miligiây tương đương với 3 giây
+
                         } else {
                             showAlertModal('danger', response.message);
                             hideLoading();
@@ -430,6 +436,10 @@
                 }
             });
         });
+        
+       
+               
+
 
     </script>
 }

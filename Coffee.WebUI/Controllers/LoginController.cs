@@ -21,17 +21,16 @@ namespace Coffee.WebUI.Controllers
     public class LoginController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
-
         private readonly DbCoffeeDbContext _dbCoffeeDbContext;
         private readonly IRepository<User> _userRepository;
+
         public LoginController(DbCoffeeDbContext dbCoffeeDbContext, IWebHostEnvironment webHostEnvironment, IRepository<User> userRepository)
         {
             _webHostEnvironment = webHostEnvironment;
             _dbCoffeeDbContext = dbCoffeeDbContext;
             _userRepository = userRepository;
         }
-        
-        //[Route("/login")]
+
         public IActionResult Index(string? error)
         {
             if (error == "false")
@@ -40,10 +39,10 @@ namespace Coffee.WebUI.Controllers
             }
             return View();
         }
+
         [HttpPost]
         public async Task<IActionResult> Index(LoginModel model)
         {
-            // Quy@0104
             if (ModelState.IsValid)
             {
                 var hashedPassword = md5.ComputeMD5Hash(model.Password);
@@ -60,11 +59,11 @@ namespace Coffee.WebUI.Controllers
                 }
                 var role = await _dbCoffeeDbContext.Roles.FirstOrDefaultAsync(x => x.Id == user.RoleId);
                 var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Email, user.Email),
-                        new Claim(ClaimTypes.Name, user.Name),
-                        new Claim(ClaimTypes.Role, role.Name)
-                    };
+                {
+                    new Claim(ClaimTypes.Email, user.Email),
+                    new Claim(ClaimTypes.Name, user.Name),
+                    new Claim(ClaimTypes.Role, role.Name)
+                };
                 var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 var principal = new ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
@@ -75,11 +74,13 @@ namespace Coffee.WebUI.Controllers
                 return View(model);
             }
         }
+
         public async Task<IActionResult> Logout()
         {
             await HttpContext.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
         public IActionResult GoogleLogin()
         {
             var properties = new AuthenticationProperties
@@ -111,44 +112,37 @@ namespace Coffee.WebUI.Controllers
             }
             return RedirectToAction("Index", "Home");
         }
-        public IActionResult Register()
 
+        public IActionResult Register()
         {
-           
             return View();
         }
-        
+
         public string GetHtmlTemplate(string templateName)
         {
             var path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "sendmail", templateName);
             var htmlBody = System.IO.File.ReadAllText(path);
             return htmlBody;
         }
+        //send otp
         [HttpPost]
         [Route("/send-otp")]
         public async Task<IActionResult> SendOTPEmail(string email)
         {
-            var checkEmail = await _userRepository.GetAllAsync();
+            
 
-            if (checkEmail.Any(x => x.Email == email))
+            var checkEmail = await _userRepository.GetAllAsync();
+            if (checkEmail.Where(x => x.Email == email).Count() > 0)
             {
                 return Json(new { success = false, message = "Email đã tồn tại!" });
             }
-            
-            // Generate OTP
+
+            // Generate OTP 
             Random random = new Random();
             var randomNumber = random.Next(100000, 1000000);
 
-
-
             // Read HTML template content from file
             string htmlBody = GetHtmlTemplate("sendmail.html");
-
-            // Replace OTP placeholder with actual OTP
-            htmlBody = htmlBody.Replace("{{OTP}}", randomNumber.ToString());
-
-            
-
 
             // Replace OTP placeholder with actual OTP
             htmlBody = htmlBody.Replace("{{OTP}}", randomNumber.ToString());
@@ -170,9 +164,57 @@ namespace Coffee.WebUI.Controllers
 
                 // Store OTP in session
                 HttpContext.Session.SetString("OTP", randomNumber.ToString());
+                HttpContext.Session.SetString("OTPGenerationTime", DateTime.Now.ToString());
 
                 // Return success message
                 return Json(new { success = true, message = "Vui lòng xem email để lấy mã OTP!" });
+            }
+            catch (Exception ex)
+            {
+                // Handle email sending error
+                return Json(new { success = false, message = "Failed to send email: " + ex.Message });
+            }
+        }
+        //resend otp
+        [HttpPost]
+        [Route("/resend-otp")]
+        public async Task<IActionResult> ResendOTPEmail(string email)
+        {
+            // Generate new OTP
+            Random random = new Random();
+            var newOtp = random.Next(100000, 1000000);
+
+            // Read HTML template content from file
+            string htmlBody = GetHtmlTemplate("sendmail.html");
+
+            // Replace OTP placeholder with the new OTP
+            htmlBody = htmlBody.Replace("{{OTP}}", newOtp.ToString());
+
+            // Create MailMessage object
+            MailMessage message = new MailMessage("amusestuff001@gmail.com", email, "OTP", htmlBody);
+            message.IsBodyHtml = true;
+
+            // SMTP client configuration
+            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
+            client.EnableSsl = true;
+            client.UseDefaultCredentials = false;
+            client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
+
+            try
+            {
+                // Send email
+                await client.SendMailAsync(message);
+
+                // Remove old OTP from session
+                HttpContext.Session.Remove("OTP");
+                HttpContext.Session.Remove("reOTP");
+
+                // Store new OTP in session
+                HttpContext.Session.SetString("reOTP", newOtp.ToString());
+                HttpContext.Session.SetString("OTPGenerationTime", DateTime.Now.ToString());
+
+                // Return success message
+                return Json(new { success = true, message = "Vui lòng xem email để lấy mã OTP mới!" });
             }
             catch (Exception ex)
             {
@@ -184,20 +226,32 @@ namespace Coffee.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password, string otp, string name, string username)
         {
+            
             var checkUsername = await _userRepository.GetAllAsync();
-
-            if (checkUsername.Where(x => x.UserName == username).Count() > 0)
+            if (checkUsername.Any(x => x.UserName == username && x.UserName != null))
             {
                 return Json(new { success = false, message = "Tên đăng nhập đã tồn tại!" });
             }
+
+            var otpGenerationTimeStr = HttpContext.Session.GetString("OTPGenerationTime");
             var otpss = HttpContext.Session.GetString("OTP");
-            if (otpss == otp)
+            var reotpss = HttpContext.Session.GetString("reOTP");
+            DateTime otpGenerationTime;
+
+            if (!DateTime.TryParse(otpGenerationTimeStr, out otpGenerationTime) || (DateTime.Now - otpGenerationTime).TotalMinutes > 2)
+            {
+                return Json(new { success = false, message = "Mã OTP đã hết hạn." });
+            }
+
+            if (otpss == otp || otp == reotpss )
             {
                 var _user = new User { Email = email, Password = md5.ComputeMD5Hash(password), Status = true, CreatedOn = DateTime.Now, RoleId = 2, Name = name, UserName = username };
                 try
                 {
                     await _userRepository.InsertAsync(_user);
                     HttpContext.Session.Remove("OTP");
+                    HttpContext.Session.Remove("reOTP");
+
                     return Json(new { success = true, message = "Đăng kí thành công!" });
                 }
                 catch (Exception ex)
@@ -212,3 +266,5 @@ namespace Coffee.WebUI.Controllers
         }
     }
 }
+
+

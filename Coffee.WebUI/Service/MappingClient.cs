@@ -10,6 +10,7 @@ namespace Coffee.WebUI.Service
         {
             CreateMap<Review,ReviewModel>();
             CreateMap<New,NewModel>();
+            CreateMap<Product, ProductModel>();
         }
     }
 }

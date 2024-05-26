@@ -12,5 +12,6 @@ namespace Coffee.WebUI.Models
         public int ProductId { get; set; }
         public bool Status { get; set; }
         public DateTime CreatedOn { get; set; }
+        public string Reply {  get; set; }
     }
 }
