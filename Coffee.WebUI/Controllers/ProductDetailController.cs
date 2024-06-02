@@ -4,9 +4,11 @@ using Coffee.DATA.Repository;
 using Coffee.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using NuGet.Protocol.Core.Types;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
+using System.Security.Cryptography.Xml;
 using System.Security.Policy;
 
 namespace Coffee.WebUI.Controllers
@@ -20,8 +22,9 @@ namespace Coffee.WebUI.Controllers
         private readonly IRepository<Review> _reviewRepository;
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<OrderDetail> _orderDetailRepository;
+        private readonly IRepository<Promotion> _promotionRepository;
         private readonly IMapper _mapper;
-        public ProductDetailController(IRepository<Order> orderRepository, IRepository<OrderDetail> orderDetailRepository, IRepository<Review> reviewRepository, IRepository<User> userRepository, IMapper mapper, IRepository<Product> productRepository, IRepository<ProductImage> productImageRepository, IRepository<Category> categoryRepository)
+        public ProductDetailController(IRepository<Order> orderRepository,IRepository<Promotion>promotionReposity, IRepository<OrderDetail> orderDetailRepository, IRepository<Review> reviewRepository, IRepository<User> userRepository, IMapper mapper, IRepository<Product> productRepository, IRepository<ProductImage> productImageRepository, IRepository<Category> categoryRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;
@@ -31,6 +34,7 @@ namespace Coffee.WebUI.Controllers
             _productRepository = productRepository;
             _productImageRepository = productImageRepository;
             _categoryRepository = categoryRepository;
+            _promotionRepository = promotionReposity;
         }
 
         public async Task<IActionResult> Index(int id)
@@ -192,5 +196,42 @@ namespace Coffee.WebUI.Controllers
                 });
             }
         }
+
+       
+        public async Task<IActionResult> ApplyPromotionCode(int id, string promoCode)
+        {
+            var promotions = await _promotionRepository.GetAllAsync();
+            // Fetch the product by its ID
+            var _productDetail = await _productRepository.GetByIdAsync(id);
+            if (_productDetail == null)
+            {
+                return StatusCode(404);
+            }
+            if (_productDetail.Status == false)
+            {
+                return StatusCode(404);
+            }
+
+            // Fetch all promotions
+            
+
+            // Find the matching promotion
+            var promotion = promotions.FirstOrDefault(p => p.Code.Equals(promoCode, StringComparison.OrdinalIgnoreCase));
+            if (promotion == null)
+            {
+                return Json(new { success = false, message = "Invalid promotion code" });
+            }
+
+            // Calculate the discounted price
+            var discountPrice = _productDetail.Price - (_productDetail.Price * promotion.discount_percentage / 100);
+
+            // Return the result in JSON format
+            return Json(new { success = true, originalPrice = _productDetail.Price, discountPrice });
+        }
     }
-}
+
+
+
+    }
+
+

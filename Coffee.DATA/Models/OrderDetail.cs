@@ -19,5 +19,6 @@ namespace Coffee.DATA.Models
         public virtual Order? Order { get; set; }
 
         public virtual Product? Product { get; set; } 
+        //public virtual Promotion? Promotion { get; set; }
     }
 }

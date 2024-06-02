@@ -68,10 +68,10 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="rowcollect">
             <div class="col-xl-6 col-lg-6">
                 <div class="mt-30 d-grid" style="justify-items:center">
-                    <p class="title-cart text-center">Thông tin giao hàng</p>
+                    <p class="title-cart text-center" id="delivery">Thông tin giao hàng </p>
                     <div style="width: 100%">
                         <label class="form-label">Tỉnh / Thành phố</label>
                         <select class="form-control" id="province">
@@ -101,7 +101,7 @@
             </div>
             <div class="col-xl-6 col-lg-6 justify-content-end">
                 <div class="cart-total mt-30">
-                    <p class="title-cart text-center">Thành tiền</p>
+                    <p class="title-cart text-center" id="price">Thành tiền</p>
                     <div class="ct-sub ct-sub__total">
                         <span>Thành tiền</span>
                         <span id="txtTotal">0 đ</span>
@@ -197,6 +197,9 @@
                 cartTableHTML += '<tr><td colspan="5">Giỏ của bạn đang trống!</td></tr>';
                 cartTableHTMLmobie += '<tr><td colspan="5">Giỏ của bạn đang trống!</td></tr>';
                 $('#PayCart').hide();
+                $('#delivery').hide();
+                $('#price').hide();
+                $('#rowcollect').hide();
             }
 
             cartTableHTML += '</tbody></table>';

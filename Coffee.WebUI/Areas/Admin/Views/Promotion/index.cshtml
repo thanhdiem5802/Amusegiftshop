@@ -1,0 +1,231 @@
+﻿@{
+    ViewData["Title"] = "Promotion";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+<style>
+    .modal-header {
+        background-color: #007bff !important;
+        color: white !important;
+    }
+
+    .modal-footer a {
+        background-color: #007bff !important;
+        color: white !important;
+        padding: 10px 20px !important;
+        border-radius: 5px !important;
+        text-decoration: none !important;
+    }
+
+        .modal-footer a:hover {
+            background-color: #0056b3 !important;
+        }
+
+    .form-control {
+        margin-bottom: 10px !important;
+    }
+
+    .table-responsive {
+        margin-top: 20px !important;
+    }
+</style>
+<div class="card shadow mb-4">
+    <div class="card-header py-3">
+        <a href="javascript:void(0)" data-toggle="modal" data-target="#myModal" class="m-0 font-weight-bold text-primary">Thêm mã giảm giá</a>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="dataTable" class="table table-bordered" width="100%" style="min-width: 1000px" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>tên mã giảm giá </th>
+                        <th>ngày bắt đầu</th>
+                        <th>ngày kết thúc</th>
+                        <th>mã code</th>
+                        <th>Đã sử dụng</th>
+                        <th>Chi tiết</th>
+                        <th>#</th>
+                        <th>#</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- Modal tạo mã giảm giá-->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Tạo mã tại đây</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-sm-7 col-lg-6">
+                        <div>
+                            <label for="PromoName">Tên mã giảm giá</label>
+                            <input type="text" class="form form-control" id="PromoName" />
+                        </div>
+                        <div>
+                            <label for="startDate">Ngày bắt đầu</label>
+
+
+                            <input type="date" id="nextDayInput" class="form-control" placeholder="Ngày bắt đầu" />
+                        </div>
+
+                        <div>
+                            <label for="endDate">Ngày kết thúc</label>
+                            
+                            <input type="date" id="EndDayInput" class="form-control" placeholder="Ngày kết thúc" />
+                        </div>
+                        <div>
+                            <label for="discount_percentage">Phần trăm giảm giá (%)</label>
+                            <select class="form form-control" id="discount_percentage">
+                                <option value="5">5%</option>
+                                <option value="10">10%</option>
+                                <option value="20">20%</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="used">Đã sử dụng</label>
+                            <select class="form form-control" id="used">
+                                <option value="false">Chưa sử dụng</option>
+                                <option value="true">Đã sử dụng</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="quantity">Số lượng mã</label>
+                            <input type="number" class="form form-control" id="quantity" min="1" />
+                        </div>
+                        <div>
+                            <label for="description">Chi tiết</label>
+                            <input type="text" class="form form-control" placeholder="Tổng kết các mã giảm giá ở đây" id="description" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a href="javascript:void(0)" id="btnCreate" class="m-0 font-weight-bold text-primary">Lưu</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+<script>
+    $("#btnCreate").click(function () {
+        var promoName = $('#PromoName').val();
+        var startDate = $('#nextDayInput').val();
+        var endDate = $('#EndDayInput').val();
+        var percentage = $('#discount_percentage').val();
+        var used = $('#used').val();
+        var quantity = $('#quantity').val();
+        var description = $('#description').val();
+
+
+        console.log(promoName, startDate, endDate, percentage, used, quantity, description);
+
+        if (promoName && startDate && endDate && percentage && used !== undefined && quantity && description) {
+            var formData = new FormData();
+            formData.append('Quantity', quantity);
+            formData.append('PromoName', promoName);
+            formData.append('StartDate', startDate);
+            formData.append('EndDate', endDate);
+            
+            formData.append('discount_percentage', percentage);
+            formData.append('Used', used);
+            formData.append('description', description);
+            console.log(formData);
+
+            // Log each property individually
+            
+            $.ajax({
+                url: '/Admin/Promotion',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response.success) {
+                        $('#dataTable').DataTable().ajax.reload();
+                        showAlertModal('success', response.message);
+                        $('#myModal').modal('hide');
+                    } else {
+                        showAlertModal('danger', response.message);
+                    }
+                },
+                error: function () {
+                    showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
+                }
+            });
+        } else {
+            showAlertModal('danger', "Vui lòng nhập đủ các trường và chọn hình ảnh");
+        }
+    });
+    $(document).ready(function () {
+        // Lấy ngày hôm sau
+        const nextDay = new Date();
+        nextDay.setDate(nextDay.getDate() + 1);
+
+        // Format ngày hôm sau để phù hợp với định dạng của input type="date"
+        const nextDayFormatted = nextDay.toISOString().slice(0, 10);
+
+        // Đặt giá trị min cho input startDate
+        document.getElementById('nextDayInput').setAttribute('min', nextDayFormatted);
+
+        // Đặt giá trị min cho input endDate là một ngày sau ngày bắt đầu
+        document.getElementById('nextDayInput').addEventListener('change', function () {
+            const endDay = new Date(this.value);
+            endDay.setDate(endDay.getDate() + 1);
+            const endDayFormatted = endDay.toISOString().slice(0, 10);
+            document.getElementById('EndDayInput').setAttribute('min', endDayFormatted);
+        });
+    });
+</script>
+
+<script>
+    // Lấy ngày hôm sau
+    const nextDay = new Date();
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    // Format ngày hôm sau để phù hợp với định dạng của input type="date"
+    const nextDayFormatted = nextDay.toISOString().slice(0, 10);
+
+    // Đặt giá trị min cho input
+    document.getElementById('nextDayInput').setAttribute('min', nextDayFormatted);
+
+    const endDay = new Date();
+    endDay.setDate(nextDay.getDate() + 1);
+    const endDayFormatted = endDay.toISOString().slice(0, 10);
+    document.getElementById('EndDayInput').setAttribute('min', endDayFormatted);
+
+</script>
+<script>
+    //set name 
+    document.getElementById('discount_percentage').addEventListener('change', function () {
+        var selectedValue = this.value;
+        if (selectedValue == '5') {
+            var prefix = 'AG-05';
+            
+            document.getElementById('PromoName').value = prefix;
+        }
+        if (selectedValue == '10') {
+            var prefix = 'AG-10';
+
+            document.getElementById('PromoName').value = prefix;
+        }
+        if (selectedValue == '20') {
+            var prefix = 'AG-20';
+
+            document.getElementById('PromoName').value = prefix;
+        }
+    });
+</script>
+

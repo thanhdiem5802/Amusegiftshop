@@ -24,6 +24,7 @@ namespace Coffee.DATA
         public DbSet<Contact> Contact { get; set; }
         public DbSet<Book> Book { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Promotion> Promotions { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var builder = new ConfigurationBuilder()
@@ -66,7 +67,18 @@ namespace Coffee.DATA
                     .HasConstraintName("FK_User_Order");
 
             });
+            modelBuilder.Entity<Promotion>(entity =>
+            {
+                entity.ToTable("Promotions");
 
+                entity.Property(e => e.PromoName).IsRequired().HasMaxLength(255);
+                entity.Property(e => e.StartDate).IsRequired().HasColumnType("date");
+                entity.Property(e => e.EndDate).IsRequired().HasColumnType("date");
+                entity.Property(e => e.Code).HasMaxLength(250);
+                entity.Property(e => e.discount_percentage).IsRequired().HasColumnType("decimal(5, 2)");
+                entity.Property(e => e.description).HasColumnType("text");
+                entity.Property(e => e.Used).HasDefaultValue(false);
+            });
             modelBuilder.Entity<OrderDetail>(entity =>
             {
                 entity.ToTable("OrderDetail");

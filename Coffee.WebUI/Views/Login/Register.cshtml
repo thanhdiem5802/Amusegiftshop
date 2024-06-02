@@ -87,8 +87,8 @@
                     <label class="form-label">Mã otp</label>
                     <input class="form-control" style="width: 100% !important; font-size: 19px; padding-left: 10px" name="otp" placeholder="Kiểm tra email để lấy otp">
                     <div id="app"></div>
-                    <button id="resendOtpBtn" class="btn btn-primary" style="display: none;margin-left:1rem;">Gửi Lại OTP</button>
-
+@*                     <button id="resendOtpBtn" class="btn btn-primary" style="display: none;margin-left:1rem;">Gửi Lại OTP</button>
+ *@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Họ và tên</label>
@@ -304,7 +304,7 @@
                                 $("#next").hide();
                                 $("input[name='email']").prop('disabled', true);
                                 showAlertModal('success', response.message);
-                                document.getElementById('resendOtpBtn').style.display = 'block';
+                                // document.getElementById('resendOtpBtn').style.display = 'block';
                                 initializeTimer();
                             } else {
                                 showAlertModal('danger', response.message);
