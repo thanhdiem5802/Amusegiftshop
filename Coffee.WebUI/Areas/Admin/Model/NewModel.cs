@@ -9,6 +9,7 @@
         public string Keywords { get; set; }
         public string Image { get; set; }
         public int UserId { get; set; }
+        public string? Url { get; set; }
         public string UserName { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool Status { get; set; }

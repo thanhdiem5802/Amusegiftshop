@@ -86,7 +86,7 @@ namespace Coffee.WebUI.Controllers
                 client.EnableSsl = true;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "webb dong hdwk seil");
+                client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
                 ViewBag.Success = "Cảm ơn quý khách đã gữi liên hệ!";
                 //client.Send(message);
                 client.Send(Diem);
@@ -137,7 +137,7 @@ namespace Coffee.WebUI.Controllers
                 client.EnableSsl = true;
                 client.DeliveryMethod = SmtpDeliveryMethod.Network;
                 client.UseDefaultCredentials = false;
-                client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", " webb dong hdwk seil");
+                client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
                 client.Send(message);
                 client.Send(Diem);
                 //client.Send(Quyen);

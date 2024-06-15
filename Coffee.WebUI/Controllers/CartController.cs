@@ -44,7 +44,8 @@ namespace Coffee.WebUI.Controllers
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var CartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
-            double totalPrice = (double)CartModels.Sum(item => item.ProductModel.Price * item.Quantity);
+            
+            double totalPrice = (double)CartModels.Sum(item => item.ProductModel.Price * item.Quantity - item.ProductModel.Price * item.Quantity*item.Percentage/100);
             int CartCount = CartModels.Sum(item => item.Quantity);
 
             var responseData = new
@@ -59,7 +60,7 @@ namespace Coffee.WebUI.Controllers
 
 
         [HttpPost]
-        public IActionResult AddToCart(Product product, int quantity)
+        public IActionResult AddToCart(Product product, int quantity,int percentage)
         {
             var httpContext = _httpContextAccessor.HttpContext;
             var CartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
@@ -72,7 +73,7 @@ namespace Coffee.WebUI.Controllers
             else
             {
                 var _product = _dbContext.Products.Where(p => p.Id == product.Id).FirstOrDefault();
-                CartModels.Add(new CartModel { ProductModel = MapToProductModel(_product), Quantity = quantity });
+                CartModels.Add(new CartModel { ProductModel = MapToProductModel(_product), Quantity = quantity, Percentage = percentage });
             }
 
             httpContext.Session.Set("Cart", CartModels);
@@ -120,27 +121,23 @@ namespace Coffee.WebUI.Controllers
         }
         private ProductModel MapToProductModel(Product productFromDb)
         {
-            if (productFromDb.DiscountPrice != null)
-            {
-                return new ProductModel
-                {
-                    ProductId = productFromDb.Id,
-                    Name = productFromDb.Name,
-                    Url = productFromDb.Image,
-                    Description = productFromDb.Description,
-                    Price = productFromDb.DiscountPrice,
-                    categoryId = productFromDb.CategoryId,
-                };
-            }
-            return new ProductModel
+            var productModel = new ProductModel
             {
                 ProductId = productFromDb.Id,
                 Name = productFromDb.Name,
                 Url = productFromDb.Image,
                 Description = productFromDb.Description,
-                Price = productFromDb.Price,
-                categoryId = productFromDb.CategoryId,
+                Price = productFromDb.DiscountPrice ?? productFromDb.Price, // Use DiscountPrice if not null, otherwise use Price
+                categoryId = productFromDb.CategoryId
             };
+
+            if (productFromDb.DiscountPrice != null)
+            {
+                productModel.DiscountPrice = productFromDb.DiscountPrice; // Map DiscountPrice only when it's not null
+            }
+
+            return productModel;
         }
+
     }
 }

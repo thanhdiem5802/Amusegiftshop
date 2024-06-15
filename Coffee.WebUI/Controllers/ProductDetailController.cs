@@ -4,6 +4,7 @@ using Coffee.DATA.Repository;
 using Coffee.WebUI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.Identity.Client;
 using NuGet.Protocol.Core.Types;
 using System.Globalization;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace Coffee.WebUI.Controllers
         private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IRepository<Promotion> _promotionRepository;
         private readonly IMapper _mapper;
-        public ProductDetailController(IRepository<Order> orderRepository,IRepository<Promotion>promotionReposity, IRepository<OrderDetail> orderDetailRepository, IRepository<Review> reviewRepository, IRepository<User> userRepository, IMapper mapper, IRepository<Product> productRepository, IRepository<ProductImage> productImageRepository, IRepository<Category> categoryRepository)
+        public ProductDetailController(IRepository<Order> orderRepository, IRepository<Promotion> promotionReposity, IRepository<OrderDetail> orderDetailRepository, IRepository<Review> reviewRepository, IRepository<User> userRepository, IMapper mapper, IRepository<Product> productRepository, IRepository<ProductImage> productImageRepository, IRepository<Category> categoryRepository)
         {
             _orderRepository = orderRepository;
             _orderDetailRepository = orderDetailRepository;
@@ -44,7 +45,7 @@ namespace Coffee.WebUI.Controllers
             {
                 return StatusCode(404);
             }
-            if(_productDetail.Status== false)
+            if (_productDetail.Status == false)
             {
                 return StatusCode(404);
             }
@@ -96,9 +97,10 @@ namespace Coffee.WebUI.Controllers
             // Bây giờ lọc review dựa trên ProductId và xử lý trường hợp mà 'Reply' mà null
             var filteredReviews = _review
                 .Where(r => r.ProductId == id)
-                .Select(r => {
+                .Select(r =>
+                {
                     // Đưa ra giá trị mặc định nếu 'Reply' là null
-                    r.Reply = r.Reply ?? "No reply from admin yet.";
+                    r.Reply = r.Reply ;
                     return r;
                 })
                 .ToList();
@@ -178,7 +180,7 @@ namespace Coffee.WebUI.Controllers
                     ProductId = Id,
                     CreatedOn = DateTime.Now,
                     Status = true,
-                    
+
                 };
                 await _reviewRepository.InsertAsync(review);
                 return Json(new
@@ -197,41 +199,80 @@ namespace Coffee.WebUI.Controllers
             }
         }
 
-       
+
         public async Task<IActionResult> ApplyPromotionCode(int id, string promoCode)
         {
-            var promotions = await _promotionRepository.GetAllAsync();
+            var currentDate = DateTime.Now;
+
             // Fetch the product by its ID
             var _productDetail = await _productRepository.GetByIdAsync(id);
-            if (_productDetail == null)
+            if (_productDetail == null || _productDetail.Status == false)
             {
                 return StatusCode(404);
             }
-            if (_productDetail.Status == false)
-            {
-                return StatusCode(404);
-            }
+
+            // Trim leading and trailing whitespaces from promoCode
+            promoCode = promoCode.Trim();
 
             // Fetch all promotions
-            
+            var _promotions = await _promotionRepository.GetAllAsync();
 
-            // Find the matching promotion
-            var promotion = promotions.FirstOrDefault(p => p.Code.Equals(promoCode, StringComparison.OrdinalIgnoreCase));
-            if (promotion == null)
+            // Initialize flag to track if promo code is found
+            bool isPromoCodeFound = false;
+
+            // Check each promotion for matching code
+            foreach (var promotion in _promotions)
             {
-                return Json(new { success = false, message = "Invalid promotion code" });
+                var promotionCode = promotion.Code.Trim();
+
+                if (promotionCode == promoCode)
+                {
+                    isPromoCodeFound = true;
+
+                    if (promotion.Used == false)
+                    {
+                        // Check if the promotion is within the valid date range
+                        if (currentDate >= promotion.StartDate && currentDate <= promotion.EndDate)
+                        {
+                            // Calculate the discounted price
+                            var discountPrice = _productDetail.Price - (_productDetail.Price * promotion.discount_percentage / 100);
+                            var percentage = promotion.discount_percentage;
+
+                            HttpContext.Session.SetString("AppliedPromoCode", promoCode);
+
+                            // Return the discounted price and success status
+                            return Json(new { success = true, originalPrice = _productDetail.Price, discountPrice, percentage });
+                        }
+                        else
+                        {
+                            // Promotion has expired
+                            return Json(new { success = false, message = "Mã khuyến mãi đã hết hạn vào ngày " + promotion.EndDate });
+                        }
+                    }
+                    else
+                    {
+                        // Promotion code has already been used
+                        return Json(new { success = false, message = "Mã khuyến mãi đã được sử dụng trước đó" });
+                    }
+                }
             }
 
-            // Calculate the discounted price
-            var discountPrice = _productDetail.Price - (_productDetail.Price * promotion.discount_percentage / 100);
+            // If no matching promotion is found
+            if (!isPromoCodeFound)
+            {
+                return Json(new { success = false, message = "Không tìm thấy mã khuyến mãi" });
+            }
 
-            // Return the result in JSON format
-            return Json(new { success = true, originalPrice = _productDetail.Price, discountPrice });
+            // Default error message
+            return Json(new { success = false, message = "Có lỗi xảy ra khi nhập mã" });
         }
-    }
-
-
 
     }
+}
+
+
+
+
+
 
 

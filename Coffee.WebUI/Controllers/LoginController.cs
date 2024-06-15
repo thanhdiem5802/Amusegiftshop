@@ -127,10 +127,8 @@ namespace Coffee.WebUI.Controllers
         //send otp
         [HttpPost]
         [Route("/send-otp")]
-        public async Task<IActionResult> SendOTPEmail(string email)
+        public async Task<IActionResult> SendOTPEmail(string email, bool? resendOtp)
         {
-            
-
             var checkEmail = await _userRepository.GetAllAsync();
             if (checkEmail.Where(x => x.Email == email).Count() > 0)
             {
@@ -166,55 +164,12 @@ namespace Coffee.WebUI.Controllers
                 HttpContext.Session.SetString("OTP", randomNumber.ToString());
                 HttpContext.Session.SetString("OTPGenerationTime", DateTime.Now.ToString());
 
+                if (resendOtp == true)
+                {
+                    return Json(new { success = true, message = "Đã gữi lại mã otp, vui lòng xem email!" });
+                }
                 // Return success message
                 return Json(new { success = true, message = "Vui lòng xem email để lấy mã OTP!" });
-            }
-            catch (Exception ex)
-            {
-                // Handle email sending error
-                return Json(new { success = false, message = "Failed to send email: " + ex.Message });
-            }
-        }
-        //resend otp
-        [HttpPost]
-        [Route("/resend-otp")]
-        public async Task<IActionResult> ResendOTPEmail(string email)
-        {
-            // Generate new OTP
-            Random random = new Random();
-            var newOtp = random.Next(100000, 1000000);
-
-            // Read HTML template content from file
-            string htmlBody = GetHtmlTemplate("sendmail.html");
-
-            // Replace OTP placeholder with the new OTP
-            htmlBody = htmlBody.Replace("{{OTP}}", newOtp.ToString());
-
-            // Create MailMessage object
-            MailMessage message = new MailMessage("amusestuff001@gmail.com", email, "OTP", htmlBody);
-            message.IsBodyHtml = true;
-
-            // SMTP client configuration
-            SmtpClient client = new SmtpClient("smtp.gmail.com", 587);
-            client.EnableSsl = true;
-            client.UseDefaultCredentials = false;
-            client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
-
-            try
-            {
-                // Send email
-                await client.SendMailAsync(message);
-
-                // Remove old OTP from session
-                HttpContext.Session.Remove("OTP");
-                HttpContext.Session.Remove("reOTP");
-
-                // Store new OTP in session
-                HttpContext.Session.SetString("reOTP", newOtp.ToString());
-                HttpContext.Session.SetString("OTPGenerationTime", DateTime.Now.ToString());
-
-                // Return success message
-                return Json(new { success = true, message = "Vui lòng xem email để lấy mã OTP mới!" });
             }
             catch (Exception ex)
             {
@@ -226,7 +181,7 @@ namespace Coffee.WebUI.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string email, string password, string otp, string name, string username)
         {
-            
+
             var checkUsername = await _userRepository.GetAllAsync();
             if (checkUsername.Any(x => x.UserName == username && x.UserName != null))
             {
@@ -243,7 +198,7 @@ namespace Coffee.WebUI.Controllers
                 return Json(new { success = false, message = "Mã OTP đã hết hạn." });
             }
 
-            if (otpss == otp || otp == reotpss )
+            if (otpss == otp || otp == reotpss)
             {
                 var _user = new User { Email = email, Password = md5.ComputeMD5Hash(password), Status = true, CreatedOn = DateTime.Now, RoleId = 2, Name = name, UserName = username };
                 try
@@ -266,5 +221,3 @@ namespace Coffee.WebUI.Controllers
         }
     }
 }
-
-

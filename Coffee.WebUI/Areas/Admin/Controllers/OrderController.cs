@@ -3,6 +3,7 @@ using Coffee.DATA.Repository;
 using Coffee.WebUI.Areas.Admin.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
 
 namespace Coffee.WebUI.Areas.Admin.Controllers
 {
@@ -14,31 +15,77 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
         private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IRepository<Product> _productRepository;
         private readonly IRepository<User> _userRepository;
-        public OrderController(IRepository<Order> orderRepository, IRepository<User> userRepository, IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository)
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        public OrderController(IRepository<Order> orderRepository, IWebHostEnvironment webHostEnvironment, IRepository<User> userRepository, IRepository<OrderDetail> orderDetailRepository, IRepository<Product> productRepository)
         {
             _orderRepository = orderRepository;
             _userRepository = userRepository;
             _orderDetailRepository = orderDetailRepository;
             _productRepository = productRepository;
+            _webHostEnvironment = webHostEnvironment;
         }
         public IActionResult Index()
         {
             return View();
+        }
+        public string GetHtmlTemplate(string templateName)
+        {
+            var path = Path.Combine(_webHostEnvironment.WebRootPath, "assets", "sendmail", templateName);
+            var htmlBody = System.IO.File.ReadAllText(path);
+            return htmlBody;
         }
         [HttpPost]
         public async Task<IActionResult> Index(int Id)
         {
             try
             {
+                var orders = await _orderRepository.GetAllAsync();
+                orders = orders.Where(x => x.OrderStatus == false);
+                var orderDetails = await _orderDetailRepository.GetAllAsync();
+                var users = await _userRepository.GetAllAsync();
+                
+
+                foreach (var order in orders)
+                {
+                    var user = users.FirstOrDefault(x => x.Id == order.UserId);
+                    if (user != null)
+                    {
+                        string htmlBody = GetHtmlTemplate("confirmbuy.html");
+                        htmlBody = htmlBody.Replace("{{customer}}", user.Name);
+
+                        using (SmtpClient client = new SmtpClient("smtp.gmail.com", 587))
+                        {
+                            client.EnableSsl = true;
+                            client.DeliveryMethod = SmtpDeliveryMethod.Network;
+                            client.UseDefaultCredentials = false;
+                            client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhydppghlacoqxt");
+
+                            MailMessage message = new MailMessage("amusestuff001@gmail.com", user.Email, "Xác nhận mua hàng thành công", htmlBody);
+                            message.IsBodyHtml = true;
+
+                            try
+                            {
+                                await client.SendMailAsync(message);
+                            }
+                            catch (Exception mailEx)
+                            {
+                                // Log or handle email sending error
+                                return Json(new { success = false, error = mailEx.Message });
+                            }
+                        }
+                    }
+                }
+
                 var _order = await _orderRepository.GetByIdAsync(Id);
-                var _orderdetail =  _orderDetailRepository.GetAllAsync;
+                var _orderdetail = await _orderDetailRepository.GetAllAsync();
 
                 _order.OrderStatus = true;
                 _order.Status = true;
-                //_orderdetail.Status = true;
-                //_orderdetail.CreatedOn = DateTime.Now;
+                // _orderdetail.Status = true;
+                // _orderdetail.CreatedOn = DateTime.Now;
+
                 await _orderRepository.UpdateAsync(_order);
-                return Json(new { success = true, message = "Xác nhận giao thành công!" });
+                return Json(new { success = true, message = "Xác nhận giao hàng thành công!" });
             }
             catch (Exception ex)
             {
@@ -49,6 +96,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                 });
             }
         }
+
         public async Task<IActionResult> GetAllOrder()
         {
             try

@@ -4,5 +4,6 @@
     {
         public ProductModel ProductModel { get; set; }
         public int Quantity { get; set; }
+        public int Percentage {  get; set; }
     }
 }

@@ -37,11 +37,12 @@
             <table id="dataTable" class="table table-bordered" width="100%" style="min-width: 1000px" cellspacing="0">
                 <thead>
                     <tr>
-                        <th>tên mã giảm giá </th>
+                        <th>tên mã</th>
                         <th>ngày bắt đầu</th>
                         <th>ngày kết thúc</th>
                         <th>mã code</th>
-                        <th>Đã sử dụng</th>
+                        <th>%</th>
+                        <th>Status</th>
                         <th>Chi tiết</th>
                         <th>#</th>
                         <th>#</th>
@@ -67,43 +68,38 @@
                 <div class="row">
                     <div class="col-12 col-sm-7 col-lg-6">
                         <div>
-                            <label for="PromoName">Tên mã giảm giá</label>
-                            <input type="text" class="form form-control" id="PromoName" />
-                        </div>
-                        <div>
-                            <label for="startDate">Ngày bắt đầu</label>
-
-
-                            <input type="date" id="nextDayInput" class="form-control" placeholder="Ngày bắt đầu" />
-                        </div>
-
-                        <div>
-                            <label for="endDate">Ngày kết thúc</label>
-                            
-                            <input type="date" id="EndDayInput" class="form-control" placeholder="Ngày kết thúc" />
-                        </div>
-                        <div>
                             <label for="discount_percentage">Phần trăm giảm giá (%)</label>
-                            <select class="form form-control" id="discount_percentage">
+                            <select class="form-control" id="discount_percentage">
                                 <option value="5">5%</option>
                                 <option value="10">10%</option>
                                 <option value="20">20%</option>
                             </select>
                         </div>
                         <div>
-                            <label for="used">Đã sử dụng</label>
-                            <select class="form form-control" id="used">
+                            <label for="PromoName">Tên mã giảm giá</label>
+                            <input type="text" class="form-control" id="PromoName" disabled />
+                        </div>
+                        <div>
+                            <label for="startDate">Ngày bắt đầu</label>
+                            <input type="date" id="nextDayInput" class="form-control" placeholder="Ngày bắt đầu" />
+                        </div>
+                        <div>
+                            <label for="endDate">Ngày kết thúc</label>
+                            <input type="date" id="EndDayInput" class="form-control" placeholder="Ngày kết thúc" />
+                        </div>
+                        <div>
+                            <label for="used">Status</label>
+                            <select class="form-control" id="used">
                                 <option value="false">Chưa sử dụng</option>
-                                <option value="true">Đã sử dụng</option>
                             </select>
                         </div>
                         <div>
                             <label for="quantity">Số lượng mã</label>
-                            <input type="number" class="form form-control" id="quantity" min="1" />
+                            <input type="number" class="form-control" id="quantity" min="1" />
                         </div>
                         <div>
                             <label for="description">Chi tiết</label>
-                            <input type="text" class="form form-control" placeholder="Tổng kết các mã giảm giá ở đây" id="description" />
+                            <input type="text" class="form-control" placeholder="Tổng kết các mã giảm giá ở đây" id="description" />
                         </div>
                     </div>
                 </div>
@@ -117,38 +113,276 @@
         </div>
     </div>
 </div>
+@* chỉnh sửa mã giảm giá
+ *@<!-- Modal chỉnh sửa mã -->
+<div class="modal fade" id="myModalUpdate">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Chỉnh sửa mã tại đây</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12 col-sm-7 col-lg-6">
+                        
+                        <div>
+                            <label for="PromoNameUpdate">Tên mã giảm giá</label>
+                            <input type="text" class="form-control" id="PromoNameUpdate" disabled />
+                        </div>
+                        <div>
+                            <label for="nextDayInputUpdate">Ngày bắt đầu</label>
+                            <input type="date" id="nextDayInputUpdate" class="form-control" placeholder="Ngày bắt đầu" />
+                        </div>
+                        <div>
+                            <label for="EndDayInputUpdate">Ngày kết thúc</label>
+                            <input type="date" id="EndDayInputUpdate" class="form-control" placeholder="Ngày kết thúc" />
+                        </div>
+                        
+                        <div>
+                            <label for="descriptionUpdate">Chi tiết</label>
+                            <input type="text" class="form-control" placeholder="Tổng kết các mã giảm giá ở đây" id="descriptionUpdate" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <a href="javascript:void(0)" id="btnUpdate" class="m-0 font-weight-bold text-primary">Lưu</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.25/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
 <script>
-    $("#btnCreate").click(function () {
-        var promoName = $('#PromoName').val();
-        var startDate = $('#nextDayInput').val();
-        var endDate = $('#EndDayInput').val();
-        var percentage = $('#discount_percentage').val();
-        var used = $('#used').val();
-        var quantity = $('#quantity').val();
-        var description = $('#description').val();
+    
+    $(document).ready(function () {
+        // const nextDay = new Date();
+        // nextDay.setDate(nextDay.getDate() + 1);
+        // const nextDayFormatted = nextDay.toISOString().slice(0, 10);
 
+        // $('#nextDayInput').attr('min', nextDayFormatted);
+        // $('#nextDayInputUpdate').attr('min', nextDayFormatted);
 
-        console.log(promoName, startDate, endDate, percentage, used, quantity, description);
+        // const endDay = new Date();
+        // endDay.setDate(nextDay.getDate() + 1);
+        // const endDayFormatted = endDay.toISOString().slice(0, 10);
+        // $('#EndDayInput').attr('min', endDayFormatted);
+        // $('#EndDayInputUpdate').attr('min', endDayFormatted);
 
-        if (promoName && startDate && endDate && percentage && used !== undefined && quantity && description) {
+        $('#discount_percentage').change(function () {
+            const selectedValue = $(this).val();
+            const prefix = selectedValue == '5' ? 'AG-05' : selectedValue == '10' ? 'AG-10' : 'AG-20';
+            $('#PromoName').val(prefix);
+        });
+        $('#discount_percentageUpdate').change(function () {
+            const selectedValue = $(this).val();
+            const prefix = selectedValue == '5' ? 'AG-05' : selectedValue == '10' ? 'AG-10' : 'AG-20';
+            $('#PromoNameUpdate').val(prefix);
+        });
+        $('#btnCreate').click(function () {
+            const promoName = $('#PromoName').val();
+            const startDate = $('#nextDayInput').val();
+            const endDate = $('#EndDayInput').val();
+            const percentage = $('#discount_percentage').val();
+            const used = $('#used').val();
+            const quantity = $('#quantity').val();
+            const description = $('#description').val();
+
+            if (promoName && startDate && endDate && percentage && used !== undefined && quantity && description) {
+                const formData = new FormData();
+                formData.append('Quantity', quantity);
+                formData.append('PromoName', promoName);
+                formData.append('StartDate', startDate);
+                formData.append('EndDate', endDate);
+                formData.append('discount_percentage', percentage);
+                formData.append('Used', used);
+                formData.append('description', description);
+
+                $.ajax({
+                    url: '/Admin/Promotion',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (response.success) {
+                            $('#dataTable').DataTable().ajax.reload(null, false);
+                            showAlertModal('success', response.message);
+                            $('#myModal').modal('hide');
+                        } else {
+                            showAlertModal('danger', response.message);
+                        }
+                    },
+                    error: function () {
+                        showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
+                    }
+                });
+            } else {
+                showAlertModal('danger', "Vui lòng nhập đủ các yêu cầu");
+            }
+        });
+        
+
+        $('#dataTable').DataTable({
+            "ajax": {
+                "url": "/Admin/Promotion/GetAllPromotion",
+                "type": "GET",
+                "dataSrc": "result"
+            },
+            "columns": [
+                { "data": "promoName" },
+                {
+                    "data": "startDate",
+                    "render": function (data) {
+                        return moment(data).format('DD/MM/YYYY'); // Sử dụng thư viện Moment.js để định dạng ngày tháng
+                    }
+                },
+                {
+                    "data": "endDate",
+                    "render": function (data) {
+                        return moment(data).format('DD/MM/YYYY'); // Sử dụng thư viện Moment.js để định dạng ngày tháng
+                    }
+                },
+                { "data": "code" },
+                { "data": "discount_percentage" },
+                { "data": "used" },
+                { "data": "description" },
+                {
+                    "data": null,
+                    "render": function (data) {
+                        return `<a href="javascript:void(0)" onclick="UpdatePromotion(${data.id})" class="m-0 font-weight-bold text-primary">Sửa</a>`;
+                    }
+                },
+                {
+                    "data": null,
+                    "render": function (data) {
+                        return `<a href="javascript:void(0)" class="m-0 font-weight-bold text-primary" onclick="DeletePromotion(${data.id})">Xóa</a>`;
+                    }
+                }
+            ],
+            "columnDefs": [
+                { "width": "10%", "targets": [0] },
+                { "width": "15%", "targets": [1, 2,3] },
+                { "width": "5%", "targets": [4, 5, ] },
+                { "width": "25%", "targets": [6] }
+            ],
+            "lengthMenu": [5, 10, 25, 50],
+            "language": {
+                processing: "Message khi đang tải dữ liệu",
+                search: "Tìm kiếm",
+                lengthMenu: "Điều chỉnh số mục trên 1 trang _MENU_ ",
+                info: "Hiển thị _START_ đến _END_ trong  _TOTAL_ mục",
+                infoEmpty: "Không có dữ liệu, Hiển thị 0 bản ghi trong _MAX_ tổng cộng 0 ",
+                infoFiltered: "(Không có sản phẩm trong _MAX_ bản ghi)",
+                loadingRecords: "",
+                zeroRecords: "Không có dữ liệu theo tìm kiếm",
+                emptyTable: "Không có dữ liệu",
+                paginate: {
+                    first: "<<",
+                    previous: "<",
+                    next: ">",
+                    last: ">>"
+                },
+                aria: {
+                    sortAscending: ": Message khi đang sắp xếp theo column",
+                    sortDescending: ": Message khi đang sắp xếp theo column",
+                }
+            },
+            "processing": true,
+            "serverSide": false,
+        });
+    });
+    var promotionId; // Biến toàn cục để lưu trữ ID của promotion
+
+    function UpdatePromotion(id) {
+        promotionId = id; // Lưu ID vào biến toàn cục
+        var formData = new FormData();
+        formData.append('Id', id);
+        $.ajax({
+            url: "/Admin/Promotion/GetAllPromotion",
+            type: "GET",
+            dataType: "json",
+            success: function (response) {
+                if (response.success) {
+                    // Duyệt qua mảng response.result
+                    for (var i = 0; i < response.result.length; i++) {
+                        if (response.result[i].id == id) {
+                            var promotion = response.result[i];
+                            $('#PromoNameUpdate').val(promotion.promoName);
+                            $('#nextDayInputUpdate').val(promotion.startDate);
+                            $('#EndDayInputUpdate').val(promotion.endDate);
+                            $('#discount_percentageUpdate').val(promotion.discount_percentage);
+                            $('#usedUpdate').val(promotion.used);
+                            $('#descriptionUpdate').val(promotion.description);
+                        }
+                    }
+                    $('#myModalUpdate').modal('show');
+                } else {
+                    showAlertModal('danger', response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
+            }
+        });
+    }
+
+    $("#btnUpdate").click(function () {
+        var promoname = $('#PromoNameUpdate').val();
+        var startday = $('#nextDayInputUpdate').val();
+        var endday = $('#EndDayInputUpdate').val();
+        var percentage = $('#discount_percentageUpdate').val();       
+        var description = $('#descriptionUpdate').val();
+
+        // Sử dụng biến promotionId được lưu từ trước
+        var formData = new FormData();
+        formData.append('Id', promotionId); // Sử dụng promotionId
+        formData.append('PromoName', promoname);
+        formData.append('StartDate', startday);
+        formData.append('EndDate', endday);
+        formData.append('discount_percentage', percentage);        
+        formData.append('description', description);
+
+        $.ajax({
+            url: '/Admin/Promotion',
+            type: 'PUT', // Sử dụng PUT thay vì Put
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (response) {
+                if (response.success) {
+                    $('#dataTable').DataTable().ajax.reload();
+                    $('#myModalUpdate').modal('hide');
+                    showAlertModal('success', response.message);
+                } else {
+                    showAlertModal('danger', response.message);
+                }
+            },
+            error: function () {
+                showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
+            }
+        });
+    });
+
+    
+    function DeletePromotion(id) {
+        if (confirm('Bạn có chắc chắn muốn xóa mã này?')) {
             var formData = new FormData();
-            formData.append('Quantity', quantity);
-            formData.append('PromoName', promoName);
-            formData.append('StartDate', startDate);
-            formData.append('EndDate', endDate);
-            
-            formData.append('discount_percentage', percentage);
-            formData.append('Used', used);
-            formData.append('description', description);
-            console.log(formData);
-
-            // Log each property individually
-            
+            formData.append('Id', id);
             $.ajax({
                 url: '/Admin/Promotion',
-                type: 'POST',
+                type: 'Delete',
                 data: formData,
                 processData: false,
                 contentType: false,
@@ -156,7 +390,6 @@
                     if (response.success) {
                         $('#dataTable').DataTable().ajax.reload();
                         showAlertModal('success', response.message);
-                        $('#myModal').modal('hide');
                     } else {
                         showAlertModal('danger', response.message);
                     }
@@ -165,67 +398,8 @@
                     showAlertModal('danger', 'Có lỗi xảy ra khi gửi yêu cầu!');
                 }
             });
-        } else {
-            showAlertModal('danger', "Vui lòng nhập đủ các trường và chọn hình ảnh");
         }
-    });
-    $(document).ready(function () {
-        // Lấy ngày hôm sau
-        const nextDay = new Date();
-        nextDay.setDate(nextDay.getDate() + 1);
 
-        // Format ngày hôm sau để phù hợp với định dạng của input type="date"
-        const nextDayFormatted = nextDay.toISOString().slice(0, 10);
-
-        // Đặt giá trị min cho input startDate
-        document.getElementById('nextDayInput').setAttribute('min', nextDayFormatted);
-
-        // Đặt giá trị min cho input endDate là một ngày sau ngày bắt đầu
-        document.getElementById('nextDayInput').addEventListener('change', function () {
-            const endDay = new Date(this.value);
-            endDay.setDate(endDay.getDate() + 1);
-            const endDayFormatted = endDay.toISOString().slice(0, 10);
-            document.getElementById('EndDayInput').setAttribute('min', endDayFormatted);
-        });
-    });
+        
+    }
 </script>
-
-<script>
-    // Lấy ngày hôm sau
-    const nextDay = new Date();
-    nextDay.setDate(nextDay.getDate() + 1);
-
-    // Format ngày hôm sau để phù hợp với định dạng của input type="date"
-    const nextDayFormatted = nextDay.toISOString().slice(0, 10);
-
-    // Đặt giá trị min cho input
-    document.getElementById('nextDayInput').setAttribute('min', nextDayFormatted);
-
-    const endDay = new Date();
-    endDay.setDate(nextDay.getDate() + 1);
-    const endDayFormatted = endDay.toISOString().slice(0, 10);
-    document.getElementById('EndDayInput').setAttribute('min', endDayFormatted);
-
-</script>
-<script>
-    //set name 
-    document.getElementById('discount_percentage').addEventListener('change', function () {
-        var selectedValue = this.value;
-        if (selectedValue == '5') {
-            var prefix = 'AG-05';
-            
-            document.getElementById('PromoName').value = prefix;
-        }
-        if (selectedValue == '10') {
-            var prefix = 'AG-10';
-
-            document.getElementById('PromoName').value = prefix;
-        }
-        if (selectedValue == '20') {
-            var prefix = 'AG-20';
-
-            document.getElementById('PromoName').value = prefix;
-        }
-    });
-</script>
-

@@ -11,6 +11,7 @@ namespace Coffee.DATA.Models
 
         
         public string? PromoName { get; set; }
+        
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? Code { get; set; }

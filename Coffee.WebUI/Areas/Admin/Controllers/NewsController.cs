@@ -30,7 +30,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //ViewBag.User = await _userRepository.GetAllAsync();
+            ViewBag.User = await _userRepository.GetAllAsync();
             return View();
         }
         [HttpPost]

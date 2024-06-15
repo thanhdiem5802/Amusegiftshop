@@ -65,7 +65,7 @@
                     {
                         "data": "reply",
                         "render": function (data, type, row) {
-                            return data ? data : 'chưa reply';
+                            return data ? data : '<span style="color: red;">chưa reply</span>';
                         }
                     },  // Cột admin reply
                     {
@@ -130,18 +130,18 @@
                 success: function (response) {
                     // Kiểm tra phản hồi từ server
                     if (response.success) {
-                        alert('Reply thành công');
+                        showAlertModal('Reply thành công');
                         $('#logoutModalUpdate').modal('hide');
                         $('#dataTable').DataTable().ajax.reload();
                         // Có thể reload DataTable tại đây hoặc cập nhật thông tin cụ thể của row bị ảnh hưởng
                     } else {
                         // Hiện thông báo lỗi nhận được từ server
-                        alert('Lỗi: ' + response.message);
+                        showAlertModal('Lỗi: ' + response.message);
                     }
                 },
                 error: function (xhr, status, error) {
                     // Sự cố với request, thông báo lỗi cho người dùng
-                    alert('Có lỗi xảy ra: ' + error);
+                    showAlertModal('Có lỗi xảy ra: ' + error);
                 }
             });
         });

@@ -82,5 +82,59 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
             }
             return new string(result);
         }
+        //cập nhật
+        [HttpPut]
+        public async Task<IActionResult> Index(Promotion model,int id)
+        {
+            Console.WriteLine($"Received model: {JsonConvert.SerializeObject(model)}");
+            var _promotion = await _promotionRepository.GetByIdAsync(id);
+            
+            try
+            {
+                _promotion.PromoName = model.PromoName;
+                _promotion.StartDate = model.StartDate;
+                _promotion.EndDate = model.EndDate;
+               
+                
+                _promotion.description = model.description;
+                await _promotionRepository.UpdateAsync(_promotion);
+                return Json(new { success = true, message = "Cập nhật thành công" });
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                return Json(new { success = false, message = "Fail: " + errorMessage });
+            }
+        }
+        [HttpDelete]
+        public async Task<IActionResult> Index(int Id)
+        {
+            try
+            {                            
+                await _promotionRepository.DeleteAsync(Id);
+                return Json(new { success = true, message = "Xoá mã thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Fail: " + ex });
+            }
+        }
+
+        public async Task<IActionResult> GetAllPromotion()
+        {
+            try
+            {
+                
+                var _promotion = await _promotionRepository.GetAllAsync();
+                var result = _mapper.Map<List<Promotion>>(_promotion);
+                
+                return Json(new { success = true, result });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "Fail: " + ex });
+            }
+        }
+
     }
 }

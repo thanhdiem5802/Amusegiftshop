@@ -53,7 +53,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                     client.EnableSsl = true;
                     client.DeliveryMethod = SmtpDeliveryMethod.Network;
                     client.UseDefaultCredentials = false;
-                    client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "webb dong hdwk seil");
+                    client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
                     client.Send(message);
 
                     _book.Status = true;

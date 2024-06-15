@@ -13,7 +13,7 @@
             padding-bottom: 20px;
         }
 
-        .amount_mobie{
+        .amount_mobie {
             display: inline-block;
             width: 180px; /* Độ rộng tối đa mà bạn muốn hiển thị */
             overflow: hidden;
@@ -22,16 +22,16 @@
             font-size: 15px;
         }
 
-        .amount_mobie span {
-            color: black;
-        }
+            .amount_mobie span {
+                color: black;
+            }
     </style>
 
 }
 <main>
     <!-- breadcrumb area start -->
     <section class="breadcrumb-area pt-140 pb-140 bg_img" data-overlay="white" data-opacity="5" data-background="../assets/images/bg/amuse.jpg">
-      
+
         <div class="container">
             <div class="row">
                 <div class="col-xl-12 text-center">
@@ -68,6 +68,7 @@
                 </div>
             </div>
         </div>
+
         <div class="row" id="rowcollect">
             <div class="col-xl-6 col-lg-6">
                 <div class="mt-30 d-grid" style="justify-items:center">
@@ -116,6 +117,10 @@
                             <input type="radio" name="Pay" id="VnPay" style="margin-right: 20px" value="" />
                             <label for="VnPay">Thanh toán VnPay</label>
                         </div>
+                        <div class="d-flex border-bottom">
+                            <input type="radio" name="Pay" id="PayOS" style="margin-right: 20px" value="" />
+                            <label for="VnPay">Thanh toán PayOS</label>
+                        </div>
                         <br />
                         @{
                             @if (User.Identity.IsAuthenticated)
@@ -123,20 +128,34 @@
                                 if (ViewBag.Cart == "True")
                                 {
                                     <div id="PayCart">
-                                        <a href="javascript:void(0)" onclick="VnPay()" class="site-btn">Tiền hành thanh toán</a>
+                                        <a href="javascript:void(0)" onclick="VnPay()" class="site-btn">Tiến hành thanh toán</a>
                                         <form id="vnPayForm" asp-controller="VnPay" asp-action="Index" method="post">
                                             <input type="hidden" name="Province" id="provinceInput">
                                             <input type="hidden" name="District" id="districtInput">
                                             <input type="hidden" name="Town" id="townInput">
                                             <input type="hidden" name="Address" id="addressInput">
+                                            <input type="hidden" name="TotalPrice" id="totalPriceVnPay">
+                                            <input type="hidden" name="Percentage" id="percentageInput"> <!-- Thêm trường này -->
                                         </form>
+
                                         <form id="vnPayFormCod" asp-controller="VnPay" asp-action="PayCod" method="post">
                                             <input type="hidden" name="Province" id="provinceInputCod">
                                             <input type="hidden" name="District" id="districtInputCod">
                                             <input type="hidden" name="Town" id="townInputCod">
                                             <input type="hidden" name="Address" id="addressInputCod">
+                                            <input type="hidden" name="TotalPrice" id="totalPriceCod">
+                                            <input type="hidden" name="Percentage" id="percentageInputCod"> <!-- Thêm trường này -->
+                                        </form>
+                                        <form id="vnPayFormPayOS" asp-controller="VnPay" asp-action="PayOS" method="post">
+                                            <input type="hidden" name="Province" id="provinceInputPayOS">
+                                            <input type="hidden" name="District" id="districtInputPayOS">
+                                            <input type="hidden" name="Town" id="townInputPayOS">
+                                            <input type="hidden" name="Address" id="addressInputPayOS">
+                                            <input type="hidden" name="TotalPrice" id="totalPricePayOS">
+                                            <input type="hidden" name="Percentage" id="percentageInputPayOS"> <!-- Thêm trường này -->
                                         </form>
                                     </div>
+                                    
                                 }
                             }
                             else
@@ -160,22 +179,25 @@
             return parseInt(value).toLocaleString('vi-VN') + " đ";
         }
 
-        function updateCartTable(data) {
+        function updateCartTable(data, totalPrice) {
             var cartTableHTML = '<table class="table"><thead><tr><th class="product-thumbnail">Hình ảnh</th><th class="cart-product-name">Tên</th><th class="product-price">Đơn giá</th><th class="product-quantity">Số lượng</th><th class="product-subtotal">Tổng</th></tr></thead><tbody>';
             var cartTableHTMLmobie = '<table class="table" style="width: 100%;"><thead><tr><th class="product-thumbnail ">Sản phẩm</th></tr></thead><tbody>';
 
             if (data.cartModels && data.cartModels.length > 0) {
                 data.cartModels.forEach(function (item) {
+
                     cartTableHTML += '<tr>';
                     cartTableHTML += '<td class="product-thumbnail"><a href="#" class="img"><img src="' + item.productModel.url + '" alt=""></a>';
                     cartTableHTML += '<a href="javascript:void(0)" class="product-remove" onclick="updateQuantity(' + item.productModel.productId + ',' + 1 + ')"><i class="fal fa-plus"></i></a>';
                     cartTableHTML += '<a href="javascript:void(0)" class="product-remove" onclick="updateQuantity(' + item.productModel.productId + ',' + 0 + ')" ><i class="fal fa-minus"></i></a>';
                     cartTableHTML += '<a href="javascript:void(0)" class="product-remove" onclick="removeFromCart(' + item.productModel.productId + ')"><i class="fal fa-times"></i></a></td>';
                     cartTableHTML += '<td class="product-name"><a href="#">' + item.productModel.name + '</a></td>';
-                    cartTableHTML += '<td class="product-price"><span class="amount">' + formatCurrency(item.productModel.price) + '</span></td>';
+                    cartTableHTML += '<td class="product-price"><span class="amount">' + formatCurrency(item.productModel.price - item.productModel.price * item.percentage / 100) + '</span></td>';
                     cartTableHTML += '<td class="product-quantity"><input type="number" value="' + item.quantity + '" min="1"></td>';
-                    cartTableHTML += '<td class="product-subtotal"><span class="amount">' + formatCurrency(item.productModel.price * item.quantity) + '</span></td>';
+                    cartTableHTML += '<td class="product-subtotal"><span class="amount">' + formatCurrency((item.productModel.price * item.quantity) - (item.productModel.price * item.quantity * item.percentage / 100)) + '</span></td>';
                     cartTableHTML += '</tr>';
+
+
 
                     cartTableHTMLmobie += '<tr class="d-sm-none">';
                     cartTableHTMLmobie += '<td class="product-thumbnail">';
@@ -186,16 +208,37 @@
                     cartTableHTMLmobie += '<span class="product-remove" style="color: #000;">' + item.quantity + '</span>';
                     cartTableHTMLmobie += '<a href="javascript:void(0)" class="product-remove" onclick="updateQuantity(' + item.productModel.productId + ', 0)"><i class="fal fa-minus"></i></a>';
                     cartTableHTMLmobie += '<a href="javascript:void(0)" class="product-remove" onclick="removeFromCart(' + item.productModel.productId + ')"><i class="fal fa-times"></i></a>';
-                    cartTableHTMLmobie += '<div class="product-remove"><span class="amount amount_mobie d-flex justify-content-between"><span>Đơn giá</span><span>' + formatCurrency(item.productModel.price) + '</span></span></div>';
-                    cartTableHTMLmobie += '<div class="product-remove"><span class="amount amount_mobie d-flex justify-content-between"><span>Tổng</span><span>' + formatCurrency(item.productModel.price * item.quantity) + '</span></span></div>';
+                    cartTableHTMLmobie += '<div class="product-remove"><span class="amount amount_mobie d-flex justify-content-between"><span>Đơn giá</span><span>' + formatCurrency(item.productModel.price - (item.productModel.price * item.percentage / 100)) + '</span></span></div>';
+                    cartTableHTMLmobie += '<div class="product-remove"><span class="amount amount_mobie d-flex justify-content-between"><span>Tổng</span><span>' + formatCurrency((item.productModel.price * item.quantity) - (item.productModel.price * item.quantity * item.percentage / 100)) + '</span></span></div>';
                     cartTableHTMLmobie += '</div>';
                     cartTableHTMLmobie += '</td>';
                     cartTableHTMLmobie += '</tr>';
-
                 });
+                let checkdisaccount = checkDiscount(data.cartModels)
+                console.log("đã tìm thấy disaccount ", checkdisaccount)
+
+
+                var discountPrice = data.cartModels[0].productModel.discountPrice !== null && data.cartModels[0].productModel.discountPrice !== undefined ? data.cartModels[0].productModel.discountPrice : '';
+                var productIds = [];
+                data.cartModels.forEach(function (item) {
+                    productIds.push(item.productModel.productId);
+                });
+
+                cartTableHTML += '<tr><td colspan="5"><label for="PromoCodeInput">Mã giảm giá: </label><input type="text" class="txtCode" id="PromoCodeInput" style="width:352px"><a href="javascript:void(0)" class="site-btn" onclick="ApplyPromoCode([' + productIds.join(',') + '], \'' + discountPrice + '\', ' + data.cartCount + ',' + checkdisaccount + ')">Kiểm Tra</a></td></tr>';
+
+                // Đoạn mã HTML trên giao diện desktop
+
+                // Đoạn mã HTML trên giao diện mobile
+                cartTableHTMLmobie += '<tr><td colspan="1"><label for="PromoCodeInput">Mã giảm giá: </label><input type="text" class="txtCode" id="PromoCodeInput" style="width:352px"><a href="javascript:void(0)" class="site-btn" onclick="ApplyPromoCode([' + productIds.join(',') + '], \'' + discountPrice + '\', ' + data.cartCount + ',' + checkdisaccount + ')">Kiểm Tra</a></td></tr>';
+
+
             } else {
+
                 cartTableHTML += '<tr><td colspan="5">Giỏ của bạn đang trống!</td></tr>';
                 cartTableHTMLmobie += '<tr><td colspan="5">Giỏ của bạn đang trống!</td></tr>';
+
+
+
                 $('#PayCart').hide();
                 $('#delivery').hide();
                 $('#price').hide();
@@ -205,9 +248,24 @@
             cartTableHTML += '</tbody></table>';
             $('#cartTable').html(cartTableHTML);
             $('#cartTableMobie').html(cartTableHTMLmobie);
-            $('#txtTotal').html(parseInt(data.totalPrice).toLocaleString('vi-VN') + " đ");
+            console.log(data)
+            if (totalPrice !== undefined) {
+                $('#txtTotal').html(parseInt(totalPrice).toLocaleString('vi-VN') + " đ");
+                $('#hiddenTotalPrice').val(totalPrice);
+            } else {
+                $('#txtTotal').html(parseInt(data.totalPrice).toLocaleString('vi-VN') + " đ");
+                $('#hiddenTotalPrice').val(data.totalPrice);
+            }
+            console.log("Updated txtTotal: " + $('#txtTotal').text()); // Print the value of txtTotal
         }
-
+        function checkDiscount(cartModels) {
+            for (var i = 0; i < cartModels.length; i++) {
+                if (cartModels[i].productModel.discountPrice > 0) {
+                    return true;
+                }
+            }
+            return false;
+        }
         // Hàm cập nhật số lượng
         function updateQuantity(productId, string) {
             let quantity = -1;
@@ -231,6 +289,90 @@
                 }
             });
         }
+        // hàm áp dụng mã
+        function ApplyPromoCode(productIds, discountPrice, cartCount, checkdisaccount) {
+            var promocode = document.getElementById('PromoCodeInput').value;
+
+            if (checkdisaccount) {
+                showAlertModal('danger', 'Không thể áp dụng mã giảm giá cho các đơn hàng khuyến mãi.');
+            } else {
+                var ajaxRequests = [];
+
+                for (let i = 0; i < productIds.length; i++) {
+                    ajaxRequests.push(
+                        $.ajax({
+                            url: '/ProductDetail/ApplyPromotionCode',
+                            type: 'POST',
+                            data: {
+                                id: productIds[i],
+                                promoCode: promocode
+                            },
+                            success: function (response) {
+                                response.productId = productIds[i]; // Include productId in the response
+                            }
+                        })
+                    );
+                }
+
+                Promise.all(ajaxRequests)
+                    .then(function (responses) {
+                        var successResponses = responses.filter(response => response.success);
+
+                        if (successResponses.length > 0) {
+                            showAlertModal('success', 'Mã giảm giá đã được áp dụng thành công.');
+                            console.log('Full Responses:', responses);
+
+                            // Lấy dữ liệu giỏ hàng đã cập nhật và cập nhật bảng giỏ hàng
+                            getCart(function (cartData) {
+                                var newTotalPrice = 0;
+
+                                // Cập nhật dữ liệu giỏ hàng với tỷ lệ mới
+                                successResponses.forEach(response => {
+                                    newTotalPrice = updateCartDataWithPercentage(response.productId, response.percentage, cartData);
+
+                                    // Lưu giá trị percentage vào trường ẩn
+                                    $('#percentageInput').val(response.percentage);
+                                    $('#percentageInputCod').val(response.percentage);
+                                    console.log('Percentage:', response.percentage); // Kiểm tra giá trị percentage
+                                });
+
+                                // Cập nhật lại bảng giỏ hàng
+                                updateCartTable(cartData, newTotalPrice); // Giả sử cartData là đối tượng dữ liệu giỏ hàng hiện tại
+                            });
+                        } else {
+                            showAlertModal('danger', 'Không thể áp dụng mã giảm giá cho các đơn hàng khuyến mãi.');
+                        }
+                    })
+                    .catch(function (error) {
+                        showAlertModal('danger', 'Đã xảy ra lỗi khi áp dụng mã khuyến mãi.');
+                    });
+            }
+        }
+
+
+
+
+        //update percentage nhận từ ajax
+        function updateCartDataWithPercentage(productId, newPercentage, cartData) {
+            let newTotalPrice = 0;
+            cartData.cartModels.forEach(function (item) {
+                if (item.productModel.productId === productId) {
+                    item.percentage = newPercentage;
+                    if (newPercentage == 0) {
+                        item.totalPrice == 0
+                    }
+                    // Update item total price with the new discount
+                    item.totalPrice = (item.productModel.price * item.quantity) - (item.productModel.price * item.quantity * item.percentage / 100);
+                }
+                // Add item total price to newTotalPrice
+                newTotalPrice += item.totalPrice || (item.productModel.price * item.quantity);
+                console.log(newTotalPrice);
+            });
+            return newTotalPrice;
+        }
+
+
+
 
         // Hàm xóa khỏi giỏ hàng
         function removeFromCart(productId) {
@@ -249,12 +391,16 @@
         }
 
         // Hàm cập nhật thông tin giỏ hàng
-        function getCart() {
+        function getCart(callback) {
             $.ajax({
                 url: '/Cart/GetCart',
                 type: 'GET',
                 success: function (data) {
-                    updateCartTable(data); // Cập nhật bảng giỏ hàng
+                    if (typeof callback === "function") {
+                        callback(data);
+                    } else {
+                        updateCartTable(data); // Cập nhật bảng giỏ hàng
+                    }
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     console.error('Error: ' + errorThrown);
@@ -344,30 +490,60 @@
             var district = $('#district').val().trim();
             var town = $('#town').val().trim();
             var address = $('#Address').val().trim();
-            console.log(province, district, town, address);
+            var percentage = $('#percentageInput').val().trim(); // Lấy giá trị percentage
+            var percentageCod = $('#percentageInputCod').val().trim(); // Lấy giá trị percentage cho COD
+
+            console.log('Province:', province);
+            console.log('District:', district);
+            console.log('Town:', town);
+            console.log('Address:', address);
+            console.log('Percentage for VnPay:', percentage); // Kiểm tra giá trị percentage
+            console.log('Percentage for Cod:', percentageCod); // Kiểm tra giá trị percentage cho COD
 
             // Kiểm tra xem người dùng đã chọn phương thức thanh toán VnPay hay không
             var isVnPaySelected = $('#VnPay').is(':checked');
             var isCodSelected = $('#Cod').is(':checked');
-            console.log(isVnPaySelected, isCodSelected);
+            var isPayOSSelected = $('#PayOS').is(':checked');
             if (province === '' || district === '' || town === '' || address === '') {
-                showAlertModal('danger', "Vui lòng điền đầy đủ thông tin")
+                showAlertModal('danger', "Vui lòng điền đầy đủ thông tin");
                 return;
             }
+
             if (isVnPaySelected) {
                 $('#provinceInput').val(province);
                 $('#districtInput').val(district);
                 $('#townInput').val(town);
                 $('#addressInput').val(address);
+                $('#percentageInput').val(percentage); // Set giá trị percentage
+
+                console.log('Submitting VnPay form with percentage:', percentage); // Kiểm tra trước khi submit
+
                 $('#vnPayForm').submit(); // Gửi form khi thông tin hợp lệ và chọn thanh toán VnPay
             }
+
             if (isCodSelected) {
                 $('#provinceInputCod').val(province);
                 $('#districtInputCod').val(district);
                 $('#townInputCod').val(town);
                 $('#addressInputCod').val(address);
-                $('#vnPayFormCod').submit(); // Gửi form khi thông tin hợp lệ và chọn thanh toán VnPay
+                $('#percentageInputCod').val(percentageCod); // Set giá trị percentage
+
+                console.log('Submitting Cod form with percentage:', percentageCod); // Kiểm tra trước khi submit
+
+                $('#vnPayFormCod').submit(); // Gửi form khi thông tin hợp lệ và chọn thanh toán Cod
+            }
+            if (isPayOSSelected){
+               
+                $('#provinceInputPayOS').val(province);
+                $('#districtInputPayOS').val(district);
+                $('#townInputPayOS').val(town);
+                $('#addressInputPayOS').val(address);
+                $('#percentageInputPayOS').val(percentage);
+
+                console.log('Submitting VnPay form with percentage:', percentage); // Kiểm tra trước khi submit
+                $('#vnPayFormPayOS').submit(); // Gửi form khi thông tin hợp lệ và chọn thanh toán PayOS
             }
         }
+       
     </script>
 }

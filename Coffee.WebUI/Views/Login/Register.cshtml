@@ -1,4 +1,4 @@
-﻿@{
+﻿﻿@{
     ViewData["Title"] = "Đăng kí";
 }
 @section Styles {
@@ -14,10 +14,10 @@
 
         .base-timer__svg {
             transform: scaleX(-1);
-            width:38rem;
+            width: 38rem;
             height: 7.5rem;
             padding-bottom: 3rem;
-            margin-top:1rem;
+            margin-top: 1rem;
         }
 
         .base-timer__circle {
@@ -40,17 +40,17 @@
             stroke: currentColor;
         }
 
-        .base-timer__path-remaining.green {
-            color: rgb(65, 184, 131);
-        }
+            .base-timer__path-remaining.green {
+                color: rgb(65, 184, 131);
+            }
 
-        .base-timer__path-remaining.orange {
-            color: orange;
-        }
+            .base-timer__path-remaining.orange {
+                color: orange;
+            }
 
-        .base-timer__path-remaining.red {
-            color: red;
-        }
+            .base-timer__path-remaining.red {
+                color: red;
+            }
 
         .base-timer__label {
             position: absolute;
@@ -87,8 +87,7 @@
                     <label class="form-label">Mã otp</label>
                     <input class="form-control" style="width: 100% !important; font-size: 19px; padding-left: 10px" name="otp" placeholder="Kiểm tra email để lấy otp">
                     <div id="app"></div>
-@*                     <button id="resendOtpBtn" class="btn btn-primary" style="display: none;margin-left:1rem;">Gửi Lại OTP</button>
- *@
+                    <a href="#" onclick="resendOtp()" id="resendOtp" class="btn btn-primary">Gửi Lại OTP</a>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Họ và tên</label>
@@ -167,7 +166,7 @@
                 cfPassInput.classList.remove('is-invalid');
                 return true;
             }
-            
+
 
 
 
@@ -176,7 +175,7 @@
             cfPassInput.addEventListener('input', validateConfirmPassword);
             nameInput.addEventListener('input', validateName);
         });
-            
+
         // Timer script
         const FULL_DASH_ARRAY = 283;
         const WARNING_THRESHOLD = 60;
@@ -196,26 +195,26 @@
 
         function initializeTimer() {
             document.getElementById("app").innerHTML = `
-                    <div class="base-timer">
-                        <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                            <g class="base-timer__circle">
-                                <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
-                                <path
-                                    id="base-timer-path-remaining"
-                                    stroke-dasharray="283"
-                                    class="base-timer__path-remaining ${remainingPathColor}"
-                                    d="
-                                        M 50, 50
-                                        m -45, 0
-                                        a 45,45 0 1,0 90,0
-                                        a 45,45 0 1,0 -90,0
-                                    "
-                                ></path>
-                            </g>
-                        </svg>
-                        <span id="base-timer-label" class="base-timer__label">${formatTime(timeLeft)}</span>
-                    </div>
-                `;
+                                    <div class="base-timer">
+                                        <svg class="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                            <g class="base-timer__circle">
+                                                <circle class="base-timer__path-elapsed" cx="50" cy="50" r="45"></circle>
+                                                <path
+                                                    id="base-timer-path-remaining"
+                                                    stroke-dasharray="283"
+                                                    class="base-timer__path-remaining ${remainingPathColor}"
+                                                    d="
+                                                        M 50, 50
+                                                        m -45, 0
+                                                        a 45,45 0 1,0 90,0
+                                                        a 45,45 0 1,0 -90,0
+                                                    "
+                                                ></path>
+                                            </g>
+                                        </svg>
+                                        <span id="base-timer-label" class="base-timer__label">${formatTime(timeLeft)}</span>
+                                    </div>
+                                `;
 
             startTimer();
         }
@@ -282,7 +281,28 @@
             remainingPathColor = COLOR_CODES.info.color;
             initializeTimer(); // Khởi động lại bộ đếm thời gian
         }
-
+        function resendOtp() {
+            $("#resendOtp").hide();
+            var email = $("input[name='email']").val();
+            $.ajax({
+                type: "POST",
+                url: "/send-otp",
+                data: { email: email, resendOtp: true },
+                success: function (response) {
+                    if (response.success) {
+                        showAlertModal('success', response.message);
+                        resetTimer();
+                        $("#resendOtp").show();
+                    } else {
+                        showAlertModal('danger', response.message);
+                        $("#resendOtp").show();
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                }
+            });
+        }
         $(document).ready(function () {
             var alerts = document.querySelectorAll('.alert');
             alerts.forEach(function (alert) {
@@ -304,7 +324,7 @@
                                 $("#next").hide();
                                 $("input[name='email']").prop('disabled', true);
                                 showAlertModal('success', response.message);
-                                // document.getElementById('resendOtpBtn').style.display = 'block';
+                               
                                 initializeTimer();
                             } else {
                                 showAlertModal('danger', response.message);
@@ -318,25 +338,6 @@
                 } else {
                     showAlertModal('danger', "Vui lòng nhập email!");
                 }
-            });
-            $("#resendOtpBtn").click(function () {
-                var email = $("input[name='email']").val();
-                $.ajax({
-                    type: "POST",
-                    url: "/resend-otp",
-                    data: { resend: email },
-                    success: function (response) {
-                        if (response.success) {
-                            showAlertModal('success', response.message);
-                            initializeTimer();
-                        } else {
-                            showAlertModal('danger', response.message);
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error:", error);
-                    }
-                });
             });
 
             $("#btnCreate").click(function () {
@@ -377,7 +378,7 @@
                 }
             });
         });
-        
+
     </script>
 
 }

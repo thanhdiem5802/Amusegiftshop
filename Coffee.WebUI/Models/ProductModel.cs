@@ -14,6 +14,7 @@
         public decimal? DiscountPrice { get; set; }
         public int? categoryId { get; set; }
         public string? categoryName { get; set; }
+        
 
         public List<ProductImageModel>? ProductImages { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,16 +13,28 @@ namespace Coffee.DATA.Repository
     {
         private readonly DbCoffeeDbContext _context;
         private readonly DbSet<T> _dbSet;
-
-        public Repository(DbCoffeeDbContext context)
+        private readonly ILogger<Repository<T>> _logger;
+        public Repository(DbCoffeeDbContext context,  ILogger<Repository<T>> logger)
         {
             _context = context;
             _dbSet = context.Set<T>();
+            _logger = logger;
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            try
+            {
+                _logger.LogInformation("Fetching all records of type {EntityType}", typeof(T).Name);
+                var result = await _dbSet.ToListAsync();
+                _logger.LogInformation("Fetched {Count} records of type {EntityType}", result.Count, typeof(T).Name);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while fetching records of type {EntityType}", typeof(T).Name);
+                throw;
+            }
         }
 
         public async Task<T> GetByIdAsync(object id)

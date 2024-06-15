@@ -142,6 +142,7 @@
                                 </span>
                             }
                         }
+                        <div id="priceContainer">
                         @{
                             if (Model.DiscountPrice > 0)
                             {
@@ -153,17 +154,27 @@
                                 <h3 class="price"> @Convert.ToInt32(Model.Price).ToString("C0", new System.Globalization.CultureInfo("vi-VN")).Replace(",", ".")</h3>
                             }
                         }
+                        </div>
                         @{
                             if (Convert.ToInt32(Model.Quantity) > 0)
                             {
                                 <div class="product-quantity d-flex align-items-center">
                                     <span>Số lượng</span>
                                     <input type="number" class="txtNumber" value="1" min="1" max="@Model.Quantity">
-                                    <a href="javascript:void(0)" class="site-btn" onclick="addCart('@Model.ProductId',1)">Thêm giỏ hàng</a>
+                                    <a href="javascript:void(0)" class="site-btn" onclick="addCart('@Model.ProductId', 1, 0)">Thêm giỏ hàng</a>
                                 </div>
                             }
                         }
-                        <a href="#0" class="wishlist"><i class="fas fa-heart"></i> Thêm danh sach theo dỏi</a>
+                        @* //giảm giá *@
+                        <div class="product-quantity d-flex align-items-center">
+                            <span>Mã giảm giá</span>
+
+                            <input type="text" class="txtCode" id="PromoCodeInput" style="width:352px">
+                            @{
+                                string discountPrice = Model.DiscountPrice != null ? Model.DiscountPrice.ToString() : string.Empty;
+                            }
+                            <a href="javascript:void(0)" class="site-btn" onclick="ApplyPromoCode('@Model.ProductId', '@discountPrice')">Kiểm Tra</a>
+                        </div>
                         <div class="pd-social-wrapper">
                             <span class="share"><i class="fas fa-share"></i> Chia sẻ</span>
                             <div class="social-links d-flex align-items-center">
@@ -190,9 +201,7 @@
                             <a class="nav-link active" id="pinfo-1-tab" data-bs-toggle="tab" href="#pinfo-1" role="tab" aria-controls="pinfo-1" aria-selected="true">
                                 Thông tin chi tiết sản phẩm
                             </a>
-                            <a class="nav-link" id="pinfo-2-tab" data-bs-toggle="tab" href="#pinfo-2" role="tab" aria-controls="pinfo-2" aria-selected="true">
-                                thông tin bổ sung
-                            </a>
+                            
                             <a class="nav-link" id="pinfo-3-tab" data-bs-toggle="tab" href="#pinfo-3" role="tab" aria-controls="pinfo-3" aria-selected="true">
                                 (@ViewBag.CountRating) Đánh giá
                             </a>
@@ -203,20 +212,7 @@
                     <div class="tab-pane fade show active" id="pinfo-1" role="tabpanel" aria-labelledby="pinfo-1-tab">
                         <p>@Html.Raw(Model.Description)</p>
                     </div>
-                    <div class="tab-pane fade" id="pinfo-2" role="tabpanel" aria-labelledby="pinfo-2-tab">
-                        <ul class="adi-info list-unstyled mb-0">
-                            <li>Weight</li>
-                            <li>1.4 oz</li>
-                            <li>Dimensions</li>
-                            <li>62 × 56 × 12 in</li>
-                            <li>Size</li>
-                            <li>XL, XXL, LG, SM, MD</li>
-                            <li>Fabric</li>
-                            <li>Cotton, Silk &amp; Synthetic</li>
-                            <li>Warranty</li>
-                            <li>3 Months</li>
-                        </ul>
-                    </div>
+                    
                     <div class="tab-pane fade" id="pinfo-3" role="tabpanel" aria-labelledby="pinfo-3-tab">
                         <div class="pp-comments">
                             @{
@@ -258,6 +254,7 @@
                                                         </div>
                                                     </div>
                                                 }
+                                               
                                             </div>
                                         </div>
                                     }
@@ -445,18 +442,20 @@
         }
     </script>
     <script>
-        function addCart(productId, quantity) {
+        function addCart(productId, quantity,percentage) {
             // var count = 1;
             if (quantity == 0) {
                 quantity = $('#txtNumber_' + productId).val();
             }
-            console.log(quantity);
+            
+            
             $.ajax({
                 url: '/Cart/AddToCart',
                 type: 'POST',
                 data: {
                     product: { Id: productId },
-                    quantity: quantity
+                    quantity: quantity,
+                    percentage: percentage
                 },
                 success: function (response) {
                     if (response.success) {
@@ -472,56 +471,100 @@
     </script>
     <script>
         $(document).ready(function () {
-            // // thêm sự kiện cho input
-            $(".txtnumber").on("input", function () {
-                // lấy giá trị max từ thuộc tính max của input
-                var max = parseint($(".txtnumber").attr("max"));
-                // lấy giá trị min từ thuộc tính min của input (nếu có)
-                var min = parseint($(".txtnumber").attr("min"));
-                // chuyển đổi giá trị nhập vào thành số nguyên
-                var value = parseint($(this).val());
+            // // Thêm sự kiện cho input
+            $(".txtNumber").on("input", function () {
+                // Lấy giá trị max từ thuộc tính max của input
+                var max = parseInt($(".txtNumber").attr("max"));
+                // Lấy giá trị min từ thuộc tính min của input (nếu có)
+                var min = parseInt($(".txtNumber").attr("min"));
+                // Chuyển đổi giá trị nhập vào thành số nguyên
+                var value = parseInt($(this).val());
 
-                // kiểm tra nếu giá trị nhập vào nhỏ hơn giá trị min
+                // Kiểm tra nếu giá trị nhập vào nhỏ hơn giá trị min
                 if (min !== undefined && value < min) {
-                    // đặt lại giá trị của input thành giá trị min
+                    // Đặt lại giá trị của input thành giá trị min
                     $(this).val(min);
                 }
-                // kiểm tra nếu giá trị nhập vào lớn hơn giá trị max
+                // Kiểm tra nếu giá trị nhập vào lớn hơn giá trị max
                 else if (value > max) {
-                    // đặt lại giá trị của input thành giá trị max
+                    // Đặt lại giá trị của input thành giá trị max
                     $(this).val(max);
                 }
-                // kiểm tra nếu giá trị nhập vào là số âm
+                // Kiểm tra nếu giá trị nhập vào là số âm
                 else if (value < 1) {
-                    // đặt lại giá trị của input thành 0 hoặc giá trị min (tuỳ vào yêu cầu)
+                    // Đặt lại giá trị của input thành 0 hoặc giá trị min (tuỳ vào yêu cầu)
                     $(this).val(0);
                 }
             });
-            $('.txtnumber').change(function () {
-                // lấy giá trị của input
+            $('.txtNumber').change(function () {
+                // Lấy giá trị của input
                 var value = $(this).val();
 
-                // kiểm tra xem giá trị có phải là null hoặc rỗng không
+                // Kiểm tra xem giá trị có phải là null hoặc rỗng không
                 if (value === null || value.trim() === '') {
-                    // nếu là null hoặc rỗng, đặt giá trị của input thành 1
+                    // Nếu là null hoặc rỗng, đặt giá trị của input thành 1
                     $(this).val('1');
                 }
             });
-            // thêm sự kiện keydown để chặn phím "-"
-            $(".txtnumber").on("keydown", function (e) {
-                // lấy mã phím
+            // Thêm sự kiện keydown để chặn phím "-"
+            $(".txtNumber").on("keydown", function (e) {
+                // Lấy mã phím
                 var key = e.key;
-                // kiểm tra nếu phím là dấu trừ
+                // Kiểm tra nếu phím là dấu trừ
                 if (key === "-") {
-                    // chặn sự kiện mặc định của phím
-                    e.preventdefault();
+                    // Chặn sự kiện mặc định của phím
+                    e.preventDefault();
                 }
                 if (key === "e") {
-                    // chặn sự kiện mặc định của phím
-                    e.preventdefault();
+                    // Chặn sự kiện mặc định của phím
+                    e.preventDefault();
                 }
             });
         });
 
+    </script>
+    <script>
+        function ApplyPromoCode(productId, discountPrice) {
+            if (parseFloat(discountPrice) > 0) {
+                showAlertModal('danger', 'Không thể áp dụng mã cho các đơn hàng đã được khuyến mãi trước đó');
+                return;
+            }
+
+            var promocode = document.getElementById('PromoCodeInput').value;
+
+            $.ajax({
+                url: '/ProductDetail/ApplyPromotionCode',
+                type: 'POST',
+                data: {
+                    id: productId,
+                    promoCode: promocode
+                },
+                success: function (response) {
+                    if (response.success) {
+                        showAlertModal('success', 'Mã giảm giá đã được áp dụng thành công.');
+
+                        // Update the price in the HTML
+                        var priceContainer = document.getElementById('priceContainer');
+                        var newPriceHtml = '<h3 class="price">' +
+                            response.discountPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace(',', '.') +
+                            ' / <span class="regular"><del>' +
+                            response.originalPrice.toLocaleString('vi-VN', { style: 'currency', currency: 'VND' }).replace(',', '.') +
+                            '</del></span></h3>';
+                        priceContainer.innerHTML = newPriceHtml;
+                        // Update the onclick event for addCart with new price
+                        var addCartBtn = document.querySelector('.site-btn[onclick*="addCart"]');
+                        addCartBtn.setAttribute('onclick', `addCart('${productId}', 1, ${response.percentage})`);
+
+                        // Disable the promo code input
+                        document.getElementById('PromoCodeInput').disabled = true;
+                        
+                    } else {
+                        showAlertModal('danger', response.message);
+                    }
+                }, error: function (xhr, status, error) {
+                    showAlertModal('danger', 'Đã xảy ra lỗi khi áp dụng mã khuyến mãi.');
+                }
+            });
+        }
     </script>
 }

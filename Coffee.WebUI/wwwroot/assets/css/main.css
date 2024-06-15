@@ -277,6 +277,7 @@ p, li, span {
 
 .section-heading p {
     font-size: 18px;
+    color: #e9ecef;
 }
 
     .section-heading p:not(:last-child) {
@@ -3373,12 +3374,13 @@ h6 {
 }
 
     .cart-bar__item .thumb img {
-        max-width: 60px;
+        max-width: 85px;
     }
 
 .cart-bar__item .content {
     padding-right: 25px;
     position: relative;
+    font-size:29px;
 }
 
     .cart-bar__item .content .title {
@@ -3390,6 +3392,7 @@ h6 {
         .cart-bar__item .content .title a {
             text-decoration: none;
             color: #010103;
+            font-size:24px;
         }
 
     .cart-bar__item .content .price {
@@ -3399,8 +3402,8 @@ h6 {
     }
 
     .cart-bar__item .content .remove {
-        top: 50%;
-        right: 0px;
+        top: -109%;
+        right: 60px;
         color: #ffffff;
         width: 20px;
         height: 20px;
@@ -3420,7 +3423,7 @@ h6 {
     border-top: 1px solid #F4F1EE;
     padding: 7px 0px;
     display: block;
-    margin-top: 20px;
+    margin-top:70px;
     margin-bottom: 20px;
 }
 
@@ -4182,7 +4185,7 @@ h6 {
 
 .about__left--2 .small {
     left: -130px;
-    bottom: 0px;
+    bottom: -169px;
 }
 
 @media (max-width: 1199px) {
@@ -4331,7 +4334,7 @@ h6 {
 }
 
 .about__list .icon {
-    color: #292d32;
+    color: #ffc107;
     width: 40px;
     height: 40px;
     border-radius: 7px;
@@ -4346,7 +4349,7 @@ h6 {
 }
 
 .about__list li {
-    color: #1b2026;
+    color: white;
     font-size: 18px;
     font-weight: 500;
     -webkit-transition: 0.3s;
@@ -4362,6 +4365,7 @@ h6 {
 
     .about__list li:not(:last-child) {
         margin-bottom: 18px;
+        color:white;
     }
 
 .about__list .text {
@@ -6070,6 +6074,7 @@ h6 {
     border: 1px solid #E2DFDD;
     border-radius: 10px;
     padding: 50px 45px;
+    background-color:#fff;
     -webkit-transition: 0.3s;
     -o-transition: 0.3s;
     transition: 0.3s;
@@ -6095,20 +6100,7 @@ h6 {
     margin-bottom: 30px;
 }
 
-    .wcu__item .icon::after {
-        width: 45px;
-        height: 45px;
-        background: #EDDFD1;
-        content: "";
-        position: absolute;
-        left: 30px;
-        top: 25px;
-        border-radius: 50%;
-        z-index: -1;
-        -webkit-transition: 0.3s;
-        -o-transition: 0.3s;
-        transition: 0.3s;
-    }
+    
 
 .wcu__item .content {
     display: -ms-flexbox;
@@ -6125,7 +6117,7 @@ h6 {
     }
 
     .wcu__item .content p {
-        color: #6c6c6c;
+        color: #000;
     }
 
 .wcu__item .inline-btn {
@@ -6223,7 +6215,7 @@ h6 {
 }
 
 .best-coffe__wrapper p {
-    color: #6c6c6c;
+    color: #000;
 }
 
 @media (max-width: 991px) {

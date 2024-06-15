@@ -14,6 +14,9 @@ using System.Net;
 using Microsoft.AspNetCore.SignalR;
 using Coffee.DATA.Service;
 using Coffee.DATA.Repository;
+using Net.payOS.Types;
+using Net.payOS;
+using System.Linq;
 
 namespace Coffee.WebUI.Controllers
 {
@@ -28,8 +31,9 @@ namespace Coffee.WebUI.Controllers
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<OrderDetail> _orderDetailRepository;
         private readonly IRepository<Product> _ProductRepository;
-
-        public VnPayController(IRepository<User> userRepository, IRepository<Order> orderRepository,IRepository<Product> productRepository, IRepository<OrderDetail> orderDetailRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, DbCoffeeDbContext db, IHubContext<NotificationHub> hubContext)
+        private readonly IRepository<Promotion> _PromotionRepository;
+        private readonly PayOS _payOS;
+        public VnPayController(IRepository<User> userRepository, IRepository<Order> orderRepository, IRepository<Product> productRepository, IRepository<OrderDetail> orderDetailRepository, IConfiguration configuration, IHttpContextAccessor httpContextAccessor, DbCoffeeDbContext db, IHubContext<NotificationHub> hubContext, IRepository<Promotion> PromotionReposity)
         {
             _userRepository = userRepository;
             _orderRepository = orderRepository;
@@ -38,7 +42,12 @@ namespace Coffee.WebUI.Controllers
             _httpContextAccessor = httpContextAccessor;
             _db = db;
             _hubContext = hubContext;
-            _ProductRepository = productRepository; 
+            _ProductRepository = productRepository;
+            _PromotionRepository = PromotionReposity;
+            _payOS = new PayOS(
+            _configuration["PayOS:ClientId"],
+            _configuration["PayOS:ApiKey"],
+            _configuration["PayOS:ChecksumKey"]);
         }
 
         public async Task<IActionResult> Index(string Province, string District, string Town, string Address)
@@ -116,7 +125,7 @@ namespace Coffee.WebUI.Controllers
                         Address = HttpContext.Session.GetString("Address")
                     };
                     var _orederId = await _orderRepository.InsertAsync(_order);
-                    
+
                     foreach (var item in CartModels)
                     {
                         var _orderDetail = new OrderDetail
@@ -126,10 +135,10 @@ namespace Coffee.WebUI.Controllers
                             Price = item.ProductModel.Price * item.Quantity,
                             Quanlity = item.Quantity,
                         };
-                       
-                            
+
+
                         await _orderDetailRepository.InsertAsync(_orderDetail);
-                        
+
                     }
                     ViewBag.ResponseCode = "00";
                     HttpContext.Session.Remove("Province");
@@ -163,7 +172,7 @@ namespace Coffee.WebUI.Controllers
             }
         }
         [HttpPost]
-        public async Task<IActionResult> PayCod(string Province, string District, string Town, string Address)
+        public async Task<IActionResult> PayCod(string Province, string District, string Town, string Address, int Percentage)
         {
             if (Province == "" || District == "" || Town == "" || Address == "")
             {
@@ -189,15 +198,32 @@ namespace Coffee.WebUI.Controllers
             var _orederId = await _orderRepository.InsertAsync(_order);
             foreach (var item in CartModels)
             {
-                // Calculate the total price for the order detail
-                var totalPrice = item.ProductModel.Price * item.Quantity;
 
+                // Calculate the total price for the order detail
+                var price = item.ProductModel.Price * item.Quantity;
+
+                if (Percentage > 0)
+                {
+                    price = price - price * Percentage / 100;
+                    var promoCode = HttpContext.Session.GetString("AppliedPromoCode");
+                    if (!string.IsNullOrEmpty(promoCode))
+                    {
+                        var appliedPromotion = (await _PromotionRepository.GetAllAsync()).FirstOrDefault(p => p.Code.Trim() == promoCode.Trim());
+                        if (appliedPromotion != null)
+                        {
+                            appliedPromotion.Used = true;
+
+
+                            await _PromotionRepository.UpdateAsync(appliedPromotion);
+                        }
+                    }
+                }
                 // Create the order detail object
                 var _orderDetail = new OrderDetail
                 {
                     OrderId = _orederId.Id,
                     ProductId = item.ProductModel.ProductId,
-                    Price = totalPrice,
+                    Price = price,
                     Quanlity = item.Quantity,
                 };
 
@@ -214,13 +240,13 @@ namespace Coffee.WebUI.Controllers
                     }
                     else
                     {
-                       
+
                         continue; // Skip processing this item and move to the next one
                     }
                 }
                 else
                 {
-                   
+
                     continue; // Skip processing this item and move to the next one
                 }
 
@@ -232,5 +258,44 @@ namespace Coffee.WebUI.Controllers
             await _hubContext.Clients.All.SendAsync("OrderHub");
             return RedirectToAction("Index", "HistoryOrder");
         }
+
+
+
+        public async Task<IActionResult> PayOS(string Province, string District, string Town, string Address, int Percentage)
+        {
+            if (string.IsNullOrEmpty(Province) || string.IsNullOrEmpty(District) || string.IsNullOrEmpty(Town) || string.IsNullOrEmpty(Address))
+            {
+                return StatusCode(404);
+            }
+
+            HttpContext.Session.SetString("Province", Province);
+            HttpContext.Session.SetString("District", District);
+            HttpContext.Session.SetString("Town", Town);
+            HttpContext.Session.SetString("Address", Address);
+
+
+            var httpContext = _httpContextAccessor.HttpContext;
+            var CartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
+            Int64 totalPrice = (Int64)CartModels.Sum(item => item.ProductModel.Price * item.Quantity);
+
+            var paymentData = new Net.payOS.Types.PaymentData(
+               orderCode: int.Parse(DateTimeOffset.Now.ToString("ffffff")),
+        amount: (int)totalPrice,
+               description: "Thanh toan don hang",
+               items: CartModels.Select(item => new Net.payOS.Types.ItemData(
+                   name: item.ProductModel.Name,
+                   quantity: item.Quantity,
+                   price: (int)item.ProductModel.Price
+               )).ToList(),
+               cancelUrl: _configuration["PayOS:CancelUrl"],
+               returnUrl: _configuration["PayOS:ReturnUrl"]
+            );
+
+            var createPaymentResult = await _payOS.createPaymentLink(paymentData);
+
+            return Redirect(createPaymentResult.paymentLinkId);
+        }
     }
 }
+
+    
