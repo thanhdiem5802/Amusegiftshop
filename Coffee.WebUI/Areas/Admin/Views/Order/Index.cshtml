@@ -18,6 +18,7 @@
                         <th>Quận / Huyện</th>
                         <th>Phường / Xã</th>
                         <th>Địa chỉ/ Số nhà</th>
+                        <th>Số điện thoại</th>
                         <th>Thanh toán</th>
                         <th>Xác nhận</th>
                         <th>#</th>
@@ -122,6 +123,7 @@
                     }
                 },
                 { "data": "address" },
+                { "data": "phone" },
                 {
                     "data": null,
                     "render": function (data, type, row) {
@@ -132,6 +134,7 @@
                         }
                     }
                 },
+
                 {
                     "data": null,
                     "render": function (data, type, row) {
@@ -222,6 +225,7 @@
                             var row = '<tr>' +
                                 '<td>' + detail.productName + '</td>' +
                                 '<td>' + detail.quantity + '</td>' +
+                               
                                 '</tr>';
                             tbody.append(row); // Append new row to tbody
                         });

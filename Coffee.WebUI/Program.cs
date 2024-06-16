@@ -39,8 +39,8 @@ namespace Coffee.WebUI
                 })
                 .AddGoogle(googleOptions =>
                 {
-                    googleOptions.ClientId = "165606253768-hl6k68l336q6hka5cq8i2rkg9pb746sf.apps.googleusercontent.com";
-                    googleOptions.ClientSecret = "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";
+                    googleOptions.ClientId = "330349037591-k2b8d972crc8p21pn3q7v5hv8phqcvrk.apps.googleusercontent.com";
+                    googleOptions.ClientSecret = "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";
                 });
             builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             builder.Services.AddHttpContextAccessor();

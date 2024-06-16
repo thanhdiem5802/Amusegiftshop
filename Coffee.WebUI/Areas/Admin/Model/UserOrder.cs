@@ -11,6 +11,7 @@
         public string District { get; set; }
         public string Town { get; set; }
         public decimal Total { get; set; }
+        public string Phone { get; set; }
         public bool Status { get; set; }
         public bool OrderStatus { get; set; }
     }

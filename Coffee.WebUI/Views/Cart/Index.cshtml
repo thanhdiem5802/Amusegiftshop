@@ -115,11 +115,11 @@
                         </div>
                         <div class="d-flex border-bottom">
                             <input type="radio" name="Pay" id="VnPay" style="margin-right: 20px" value="" />
-                            <label for="VnPay">Thanh toán VnPay</label>
+                            <label for="VnPay">Thanh toán VnPay(Tạm thời bảo trì)</label>
                         </div>
                         <div class="d-flex border-bottom">
                             <input type="radio" name="Pay" id="PayOS" style="margin-right: 20px" value="" />
-                            <label for="VnPay">Thanh toán PayOS</label>
+                            <label for="VnPay">Thanh toán QRcode</label>
                         </div>
                         <br />
                         @{
@@ -340,11 +340,12 @@
                                 updateCartTable(cartData, newTotalPrice); // Giả sử cartData là đối tượng dữ liệu giỏ hàng hiện tại
                             });
                         } else {
-                            showAlertModal('danger', 'Không thể áp dụng mã giảm giá cho các đơn hàng khuyến mãi.');
+                            showAlertModal('danger', responses[0].message); // Fixed typo: responses.[0] to responses[0]
                         }
                     })
                     .catch(function (error) {
-                        showAlertModal('danger', 'Đã xảy ra lỗi khi áp dụng mã khuyến mãi.');
+                        console.error('Error during AJAX requests:', error);
+                        showAlertModal('danger', 'Có lỗi xảy ra trong quá trình áp dụng mã giảm giá.');
                     });
             }
         }

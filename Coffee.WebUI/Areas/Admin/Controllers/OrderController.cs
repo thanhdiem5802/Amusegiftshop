@@ -122,6 +122,7 @@ namespace Coffee.WebUI.Areas.Admin.Controllers
                             Province = order.Province,
                             District = order.District,
                             Town = order.Town,
+                            Phone = user.Phone, 
                             Total = (decimal)total,
                             Status = (bool)order.Status,
                             OrderStatus = (bool)order.OrderStatus

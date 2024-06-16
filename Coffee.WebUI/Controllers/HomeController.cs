@@ -88,13 +88,13 @@ namespace Coffee.WebUI.Controllers
                 client.UseDefaultCredentials = false;
                 client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
                 ViewBag.Success = "Cảm ơn quý khách đã gữi liên hệ!";
-                //client.Send(message);
+                client.Send(message);
                 client.Send(Diem);
-                //client.Send(Quyen);
-                //client.Send(Huy);
-                //client.Send(Tram);
-                //client.Send(Nhi);
-                //client.Send(Nhung);
+                client.Send(Quyen);
+                client.Send(Huy);
+                client.Send(Tram);
+                client.Send(Nhi);
+                client.Send(Nhung);
             }
             return View();
         }
@@ -140,11 +140,11 @@ namespace Coffee.WebUI.Controllers
                 client.Credentials = new System.Net.NetworkCredential("amusestuff001@gmail.com", "wyhy dppg hlac oqxt");
                 client.Send(message);
                 client.Send(Diem);
-                //client.Send(Quyen);
-                //client.Send(Huy);
-                //client.Send(Tram);
-                //client.Send(Nhi);
-                //client.Send(Nhung);
+                client.Send(Quyen);
+                client.Send(Huy);
+                client.Send(Tram);
+                client.Send(Nhi);
+                client.Send(Nhung);
                 await _hubContext.Clients.All.SendAsync("ReceiveMessage");
             }
             catch (Exception ex)

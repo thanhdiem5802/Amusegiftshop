@@ -63,7 +63,7 @@ namespace Coffee.WebUI.Controllers
         {
             return View();
         }
-        [Route("trung-bay")]
+        [Route("feedback")]
         public IActionResult Gallery()
         {
             return View();

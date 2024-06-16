@@ -261,6 +261,8 @@ namespace Coffee.WebUI.Controllers
 
 
 
+
+        [HttpPost("/create-payment-link")]
         public async Task<IActionResult> PayOS(string Province, string District, string Town, string Address, int Percentage)
         {
             if (string.IsNullOrEmpty(Province) || string.IsNullOrEmpty(District) || string.IsNullOrEmpty(Town) || string.IsNullOrEmpty(Address))
@@ -272,30 +274,143 @@ namespace Coffee.WebUI.Controllers
             HttpContext.Session.SetString("District", District);
             HttpContext.Session.SetString("Town", Town);
             HttpContext.Session.SetString("Address", Address);
+            HttpContext.Session.SetString("Percentage", Percentage.ToString()); // Convert Percentage to string
 
 
+            try
+            {
+                var httpContext = _httpContextAccessor.HttpContext;
+                var CartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
+                var _emailUser = User.FindFirst(ClaimTypes.Email)?.Value;
+                var _userId = await _db.Users.FirstAsync(x => x.Email.Contains(_emailUser));
+
+                var cartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
+
+                Int64 totalPrice = 0;
+                foreach (var item in cartModels)
+                {
+                    var itemTotal = item.ProductModel.Price * item.Quantity;
+                    if (Percentage > 0)
+                    {
+                        itemTotal -= itemTotal * Percentage / 100;
+                    }
+                    totalPrice += (Int64)itemTotal;
+                }
+
+                int orderCode = int.Parse(DateTimeOffset.Now.ToString("ffffff"));
+                List<ItemData> items = cartModels.Select(item => new ItemData(item.ProductModel.Name, item.Quantity, (int)totalPrice)).ToList();
+
+                // Create a string with the names of the items
+                string itemNames = string.Join(", ", items.Select(i => i.name));
+
+                // Create the payment description
+                string paymentDescription = $"Thanh toán đơn hàng {_userId.Id}  ";
+
+                Net.payOS.Types.PaymentData paymentData = new Net.payOS.Types.PaymentData(orderCode, (int)totalPrice, paymentDescription, items, _configuration["PayOS:CancelUrl"], _configuration["PayOS:ReturnUrl"]);
+
+                CreatePaymentResult createPayment = await _payOS.createPaymentLink(paymentData);
+
+                return Redirect(createPayment.checkoutUrl);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+                return Json(new { success = false, message = "An error occurred while processing your request." });
+            }
+        }
+
+
+       
+        public async Task<IActionResult> ConfirmPayOS()
+        {
+           
             var httpContext = _httpContextAccessor.HttpContext;
             var CartModels = httpContext.Session.Get<List<CartModel>>("Cart") ?? new List<CartModel>();
-            Int64 totalPrice = (Int64)CartModels.Sum(item => item.ProductModel.Price * item.Quantity);
+            var _emailUser = User.FindFirst(ClaimTypes.Email)?.Value;
+            var _userId = await _db.Users.FirstAsync(x => x.Email.Contains(_emailUser));
+            var _order = new Order
+            {
+                UserId = _userId.Id,
+                CreatedOn = DateTime.Now,
+                Status = true,
+                OrderStatus = false,
+                InvoiceNumber = "0",
+                TradingCode = "0",
+                Province = HttpContext.Session.GetString("Province"),
+                District = HttpContext.Session.GetString("District"),
+                Town = HttpContext.Session.GetString("Town"),
+                Address = HttpContext.Session.GetString("Address")
+            };
+            var _orederId = await _orderRepository.InsertAsync(_order);
+            foreach (var item in CartModels)
+            {
 
-            var paymentData = new Net.payOS.Types.PaymentData(
-               orderCode: int.Parse(DateTimeOffset.Now.ToString("ffffff")),
-        amount: (int)totalPrice,
-               description: "Thanh toan don hang",
-               items: CartModels.Select(item => new Net.payOS.Types.ItemData(
-                   name: item.ProductModel.Name,
-                   quantity: item.Quantity,
-                   price: (int)item.ProductModel.Price
-               )).ToList(),
-               cancelUrl: _configuration["PayOS:CancelUrl"],
-               returnUrl: _configuration["PayOS:ReturnUrl"]
-            );
+                // Calculate the total price for the order detail
+                var price = item.ProductModel.Price * item.Quantity;
+                var percentageString = httpContext.Session.GetString("Percentage");
+                if (!int.TryParse(percentageString, out int percentage))
+                {
+                    return StatusCode(400, "Invalid percentage value.");
+                }
+                if (percentage > 0)
+                {
+                    price = price - price * percentage / 100;
+                   
+                }
+                // Create the order detail object
+                var _orderDetail = new OrderDetail
+                {
+                    OrderId = _orederId.Id,
+                    ProductId = item.ProductModel.ProductId,
+                    Price = price,
+                    Quanlity = item.Quantity,
+                };
 
-            var createPaymentResult = await _payOS.createPaymentLink(paymentData);
+                // Update the quantity of the product
+                var product = await _ProductRepository.GetByIdAsync(item.ProductModel.ProductId);
+                if (product != null)
+                {
+                    if (int.TryParse(product.Quantity, out int availableQuantity))
+                    {
+                        // Subtract the quantity of items in the cart from the available quantity of products
+                        int updatedQuantity = availableQuantity - item.Quantity;
+                        product.Quantity = updatedQuantity.ToString(); // Convert back to string
+                        await _ProductRepository.UpdateAsync(product);
+                    }
+                    else
+                    {
 
-            return Redirect(createPaymentResult.paymentLinkId);
+                        continue; // Skip processing this item and move to the next one
+                    }
+                }
+                else
+                {
+
+                    continue; // Skip processing this item and move to the next one
+                }
+
+                // Insert the order detail into the database
+                await _orderDetailRepository.InsertAsync(_orderDetail);
+            }
+            var promoCode = HttpContext.Session.GetString("AppliedPromoCode");
+            if (!string.IsNullOrEmpty(promoCode))
+            {
+                var appliedPromotion = (await _PromotionRepository.GetAllAsync()).FirstOrDefault(p => p.Code.Trim() == promoCode.Trim());
+                if (appliedPromotion != null)
+                {
+                    appliedPromotion.Used = true;
+
+
+                    await _PromotionRepository.UpdateAsync(appliedPromotion);
+                }
+            }
+            HttpContext.Session.Remove("Cart");
+            await _hubContext.Clients.All.SendAsync("OrderHub");
+            return RedirectToAction("Index", "HistoryOrder");
         }
     }
 }
 
-    
+
+
+

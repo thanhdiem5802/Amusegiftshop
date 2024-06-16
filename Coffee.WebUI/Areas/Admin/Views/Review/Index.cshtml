@@ -130,7 +130,7 @@
                 success: function (response) {
                     // Kiểm tra phản hồi từ server
                     if (response.success) {
-                        showAlertModal('Reply thành công');
+                        showAlertModal('success', "Reply thành công");
                         $('#logoutModalUpdate').modal('hide');
                         $('#dataTable').DataTable().ajax.reload();
                         // Có thể reload DataTable tại đây hoặc cập nhật thông tin cụ thể của row bị ảnh hưởng
